@@ -1,0 +1,169 @@
+/* =======================================
+ * Base & Layout
+ * ======================================= */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #04183a; /* Deep Blue Background (Consistent) */
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Header/Navbar (Placeholder - should be imported from index/search CSS) */
+.navbar {
+    width: 100%;
+    /* Assuming you'll copy the navbar styling from search.css */
+}
+
+.listing-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #0a275f; /* Slightly lighter blue for the main content area */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+}
+
+h2 {
+    color: #2563eb; /* Primary Blue Accent */
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* =======================================
+ * Form Structure & Fields
+ * ======================================= */
+.listing-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px 35px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Text, Textarea, Select, and File Inputs Styling */
+.listing-form input:not([type="checkbox"]), 
+.listing-form textarea, 
+.listing-form select {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 8px;
+    border: 1px solid #1e4ed8; /* Blue border */
+    border-radius: 8px;
+    background-color: #123068; /* Slightly lighter than container for contrast */
+    color: #fff;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.listing-form input:focus, 
+.listing-form textarea:focus, 
+.listing-form select:focus {
+    border-color: #28a745; /* Green focus border (Creative Accent) */
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
+    outline: none;
+}
+
+/* Styling for the description to span both columns */
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* =======================================
+ * File Upload (Creative Element)
+ * ======================================= */
+.file-upload-container {
+    grid-column: 1 / -1;
+    border: 2px dashed #1e4ed8;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-upload-container:hover {
+    background-color: #123068;
+}
+
+.file-upload-container label {
+    cursor: pointer;
+    color: #2563eb;
+    font-weight: 600;
+    margin-top: 5px;
+    display: block;
+}
+
+.file-upload-container input[type="file"] {
+    display: none; /* Hide the default input */
+}
+
+/* Preview Area for uploaded images */
+#image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+#image-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #1e4ed8;
+}
+
+/* =======================================
+ * Buttons and Checkboxes
+ * ======================================= */
+.form-submit-section {
+    grid-column: 1 / -1;
+    text-align: right;
+    padding-top: 15px;
+}
+
+.listing-form button[type="submit"] {
+    background-color: #28a745; /* Green Submit Button (Strong Focus) */
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.listing-form button[type="submit"]:hover {
+    background-color: #23963e;
+}
+
+/* Custom Checkbox/Radio Styling (Optional: improves look) */
+.checkbox-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
+}
+/* You'll need to use hidden inputs and styled spans for a cleaner look */
+
+/* =======================================
+ * Responsive Adjustments
+ * ======================================= */
+@media (max-width: 768px) {
+    .listing-form {
+        grid-template-columns: 1fr; /* Stack fields vertically on small screens */
+    }
+    .listing-container {
+        width: 95%;
+        padding: 20px;
+    }
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sign In Form -->
+    <div id="loginForm" class="form-box">
+      <h2>Sign In</h2>
+      <input type="email" id="loginEmail" placeholder="Email" required>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button onclick="login()">Sign In</button>
+      <p><a href="#" onclick="showForm('signupForm')">Create Account</a></p>
+      <p><a href="#" onclick="showForm('forgotForm')">Forgot Password?</a></p>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div id="signupForm" class="form-box hidden">
+      <h2>Sign Up</h2>
+      <input type="text" id="signupName" placeholder="Name" required>
+      <input type="email" id="signupEmail" placeholder="Email" required>
+      <input type="password" id="signupPassword" placeholder="Password" required>
+      <button onclick="signup()">Sign Up</button>
+      <p><a href="#" onclick="showForm('loginForm')">Already have an account? Sign In</a></p>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="forgotForm" class="form-box hidden">
+      <h2>Forgot Password</h2>
+      <input type="email" id="forgotEmail" placeholder="Enter your email" required>
+      <button onclick="resetPassword()">Reset Password</button>
+      <p><a href="#" onclick="showForm('loginForm')">Back to Login</a></p>
+    </div>
+  </div>
+
+  <!-- Load scripts -->
+  <script src="js/index.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
