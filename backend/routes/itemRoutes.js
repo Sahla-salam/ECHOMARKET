@@ -1,8 +1,12 @@
-// backend/routes/itemRoutes.js
 const express = require("express");
-const multer = require("multer"); // Must be imported
-const path = require("path"); // Must be imported
-const { createItem, getMyListings } = require("../controllers/itemController");
+const multer = require("multer");
+const path = require("path");
+// 🟢 NEW: Import getItemDetails from the controller
+const {
+  createItem,
+  getMyListings,
+  getItemDetails,
+} = require("../controllers/itemController");
 
 const router = express.Router();
 
@@ -22,6 +26,10 @@ const upload = multer({ storage: storage });
 // Apply Multer middleware to the POST route
 router.post("/", upload.array("images", 5), createItem);
 
+// 🟢 FIX 1: The specific route MUST come first!
 router.get("/my-listings", getMyListings);
+
+// 🟢 FIX 2: The parameterized route comes last.
+router.get("/:id", getItemDetails);
 
 module.exports = router;

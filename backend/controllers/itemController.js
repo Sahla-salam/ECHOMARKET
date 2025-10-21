@@ -69,3 +69,39 @@ exports.getMyListings = async (req, res) => {
     });
   }
 };
+
+// 🟢 NEW EXPORT: Function to get details of a single item
+exports.getItemDetails = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: item,
+    });
+  } catch (error) {
+    console.error("Error fetching item details:", error);
+
+    let errorMessage = "Server Error fetching item details.";
+    let statusCode = 500;
+
+    // Handle case where ID format is invalid (e.g., too short, non-hex)
+    if (error.name === "CastError") {
+      statusCode = 404;
+      errorMessage = "Item not found (Invalid ID format).";
+    }
+
+    res.status(statusCode).json({
+      success: false,
+      error: errorMessage,
+      message: error.message,
+    });
+  }
+};
