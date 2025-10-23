@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EchoMarket - Search & Filter</title>
+    <title>EchoMarket - Dashboard</title>
     <link rel="stylesheet" href="css/search_css.css"> 
     </head>
 <body>
@@ -11,6 +11,7 @@
         <h2 class="logo">ECHOMARKET</h2>
         <div class="location">📍 Kollam, Kerala</div>
         <button class="give-btn">+ Give/Barter</button>
+        <button class="exchange-request-btn">Exchange/Request</button>
     </header>
 
     <section class="search-bar">
@@ -129,3 +130,9 @@
     <script src="js/search_script.js"></script>
 </body>
 </html>
+
+<script>
+    document.querySelector('.exchange-request-btn').addEventListener('click', function() {
+        window.location.href = 'exchange-req.html';
+    });
+</script>

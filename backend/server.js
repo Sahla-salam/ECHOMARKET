@@ -7,6 +7,7 @@ const bodyParser = require("body-parser"); // Retained for consistency with your
 const path = require("path");
 
 const itemRoutes = require("./routes/itemRoutes");
+const exchangeRequestRoutes = require("./routes/exchangeRequestRoutes");
 
 const app = express();
 const PORT = 5000;
@@ -33,13 +34,14 @@ app.use("/public", express.static(path.join(__dirname, "../frontend/public")));
 
 // Serve other frontend static files (CSS, JS, index.html etc.)
 app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(express.static(path.join(__dirname, "../frontend/exchange-req.html")));
 
 // --- 3. IMPORT MODELS ---
 const User = require("./models/User");
 
 // --- 4. API ROUTES ---
 app.use("/api/items", itemRoutes);
-
+app.use("/api/exchanges", exchangeRequestRoutes)
 // ... User Routes (No changes) ...
 
 app.post("/signup", async (req, res) => {

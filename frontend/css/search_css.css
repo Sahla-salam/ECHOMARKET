@@ -30,6 +30,17 @@ body {
 }
 .give-btn:hover { background: #23963e; }
 
+.exchange-request-btn {
+    background: #460357;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.exchange-request-btn:hover { background: #460357; }
+
 /* Search Bar */
 .search-bar {
     display: flex;
