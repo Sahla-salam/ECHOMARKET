@@ -2,7 +2,14 @@ const Item = require("../models/Item");
 
 exports.createItem = async (req, res) => {
   try {
-    const TEMP_OWNER_ID = "60c72b2295d85200155b11d9";
+    const userId = req.body.userId;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: "User ID is required",
+      });
+    }
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
@@ -13,8 +20,8 @@ exports.createItem = async (req, res) => {
 
     const newItemData = {
       ...req.body,
-      owner: TEMP_OWNER_ID,
-      images: imageUrls, // Overwrite the location string with the parsed object
+      owner: userId,
+      images: imageUrls,
     };
 
     const item = await Item.create(newItemData);
@@ -49,19 +56,55 @@ exports.createItem = async (req, res) => {
 
 exports.getMyListings = async (req, res) => {
   try {
-    // NOTE: This is a temporary owner ID until you implement actual authentication
-    const TEMP_OWNER_ID = "60c72b2295d85200155b11d9";
+    const userId = req.query.userId;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: "User ID is required",
+      });
+    }
 
-    const items = await Item.find({ owner: TEMP_OWNER_ID }).lean();
+    const items = await Item.find({ owner: userId }).lean();
 
     res.status(200).json({
       success: true,
       count: items.length,
-      data: items, // 'items' are now simple objects, easily converted to JSON
+      data: items,
     });
   } catch (error) {
-    // 3. Send a clear error response
     console.error("Error fetching my listings:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+      message: error.message,
+    });
+  }
+};
+
+// Get all items EXCEPT the current user's items
+exports.getAllItems = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    
+    // Build query to exclude current user's items
+    // Convert userId to string for comparison since MongoDB stores ObjectId
+    const query = userId ? { owner: { $ne: userId } } : {};
+    
+    const items = await Item.find(query).lean();
+    
+    // Filter out current user's items in JavaScript as well (extra safety)
+    const filteredItems = userId 
+      ? items.filter(item => item.owner.toString() !== userId.toString())
+      : items;
+
+    res.status(200).json({
+      success: true,
+      count: filteredItems.length,
+      data: filteredItems,
+    });
+  } catch (error) {
+    console.error("Error fetching all items:", error);
     res.status(500).json({
       success: false,
       error: "Server Error",

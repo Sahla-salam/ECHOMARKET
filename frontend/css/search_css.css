@@ -19,6 +19,21 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .logo { font-weight: 700; letter-spacing: 0.5px; }
+
+.back-btn {
+    background: #6c757d;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.back-btn:hover { background: #5a6268; }
+
+.navbar button.active {
+    box-shadow: 0 0 0 2px #fff;
+}
 .give-btn {
     background: #28a745;
     border: none;
@@ -29,6 +44,28 @@ body {
     font-weight: 600;
 }
 .give-btn:hover { background: #23963e; }
+
+.mylisting-btn {
+    background: #ff9800;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.mylisting-btn:hover { background: #e68900; }
+
+.exchange-btn {
+    background: #84118c;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.exchange-btn:hover { background: #6d0e73; }
 
 /* Search Bar */
 .search-bar {
@@ -80,6 +117,18 @@ body {
     padding: 20px 40px;
 }
 
+/* Full width main content (for My Listings page) */
+.main-content-full {
+    display: flex;
+    justify-content: center;
+    padding: 20px 40px;
+}
+
+.main-content-full .results {
+    width: 100%;
+    max-width: 1400px;
+}
+
 /* Filters Sidebar */
 .filters {
     background-color: #f0f0f0; /* Lighter sidebar background */
@@ -127,7 +176,7 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
     overflow: hidden; 
-    cursor: pointer; /* Indicate it's clickable */
+    cursor: pointer; 
 }
 .card:hover { transform: translateY(-5px); }
 
@@ -155,24 +204,24 @@ body {
 
 
 /* ========================================
-🔥 MODAL POP-UP STYLES START 🔥
+MODAL POP-UP STYLES START
 ========================================
 */
 .modal {
     display: none; /* Hidden by default */
     position: fixed; 
-    z-index: 1000; /* Ensure it's above everything */
+    z-index: 1000; 
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto; 
-    background-color: rgba(0,0,0,0.7); /* Dark overlay */
+    background-color: rgba(0,0,0,0.7); 
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto; /* 5% from the top and centered */
+    margin: 5% auto; 
     padding: 30px;
     border-radius: 10px;
     width: 90%;
@@ -203,18 +252,77 @@ body {
     cursor: pointer;
 }
 
-/* Modal Actions and Images */
-#modal-image-gallery {
-    margin-top: 15px;
-    margin-bottom: 20px;
-    text-align: center;
+/* 🖼️ GALLERY LAYOUT FIXES 🖼️ */
+
+.modal-grid {
+    /* Use grid to separate the gallery (left) from the info (right) */
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; 
+    gap: 20px;
+    margin-top: 15px; 
 }
-#modal-image-gallery img {
-    max-height: 250px;
-    width: auto;
-    object-fit: contain;
+
+.modal-gallery {
+    /* Container for the main image and thumbnails */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 1. Main Image Display */
+#modal-main-image-display {
+    width: 100%;
+    max-height: 300px; 
+    overflow: hidden; 
     border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
 }
+
+.modal-main-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; 
+}
+
+/* 2. Thumbnails Container */
+#modal-image-thumbnails {
+    width: 100%;
+    display: flex; /* Lays thumbnails out horizontally */
+    gap: 10px;
+    justify-content: flex-start; 
+    overflow-x: auto; 
+    padding-bottom: 5px; 
+}
+
+.modal-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover; /* Crops to fill the space for clean squares */
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0; 
+}
+
+.modal-thumbnail:hover {
+    border-color: #2563eb; 
+}
+
+.modal-thumbnail.active-thumbnail {
+    /* Highlight the currently selected thumbnail */
+    border-color: #28a745; 
+    transform: scale(1.05);
+}
+
+/* --------------------------------------- */
+
 
 .modal-actions {
     margin-top: 25px;
@@ -233,18 +341,26 @@ body {
     transition: background-color 0.2s;
 }
 
-.contact-btn {
+#contactSellerBtn.secondary-btn {
     background-color: #2563eb; 
     color: white;
 }
-.contact-btn:hover { background-color: #1e4ed8; }
+#contactSellerBtn.secondary-btn:hover { background-color: #1e4ed8; }
 
-.request-btn {
+#requestItemBtn.primary-btn, #editItemBtn.primary-btn {
     background-color: #28a745; 
     color: white;
 }
-.request-btn:hover { background-color: #23963e; }
+#requestItemBtn.primary-btn:hover, #editItemBtn.primary-btn:hover { background-color: #23963e; }
+
+.delete-btn {
+    background-color: #dc3545 !important; 
+    color: white !important;
+}
+.delete-btn:hover { background-color: #c82333 !important; }
+
+
 /* ========================================
-🔥 MODAL POP-UP STYLES END 🔥
+MODAL POP-UP STYLES END
 ========================================
 */

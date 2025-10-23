@@ -2,7 +2,6 @@
 // 1. Elements & Modal Setup
 // ---------------------------------------------
 const container = document.getElementById("cards");
-const myListingsContainer = document.getElementById("myListings");
 const countDisplay = document.getElementById("count");
 
 const itemModal = document.getElementById("itemModal");
@@ -60,13 +59,28 @@ async function showItemModal(itemId) {
         ? `<img src="${item.images[0]}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
         : `<p>No image available.</p>`; // 3. Attach item ID to buttons for future action
 
+    // Attach item ID, owner ID, and item name to buttons
     document
       .getElementById("contactSellerBtn")
       .setAttribute("data-item-id", itemId);
     document
+      .getElementById("contactSellerBtn")
+      .setAttribute("data-item-owner-id", item.owner);
+    document
+      .getElementById("contactSellerBtn")
+      .setAttribute("data-item-name", item.title);
+      
+    document
       .getElementById("requestItemBtn")
-      .setAttribute("data-item-id", itemId); // 4. Display the Modal
+      .setAttribute("data-item-id", itemId);
+    document
+      .getElementById("requestItemBtn")
+      .setAttribute("data-item-owner-id", item.owner);
+    document
+      .getElementById("requestItemBtn")
+      .setAttribute("data-item-name", item.title);
 
+    // 4. Display the Modal
     itemModal.style.display = "block";
   } catch (error) {
     console.error("Error showing item modal:", error);
@@ -115,8 +129,17 @@ function renderCards(data, containerElement) {
 // ---------------------------------------------
 async function fetchAllItems() {
   try {
-    const res = await fetch("http://localhost:5000/api/items");
+    const userId = localStorage.getItem("userId");
+    console.log("🔍 Fetching all items. Current userId:", userId);
+    
+    const url = userId 
+      ? `http://localhost:5000/api/items/all?userId=${userId}`
+      : "http://localhost:5000/api/items/all";
+    
+    const res = await fetch(url);
     const data = await res.json();
+    console.log("📦 Received items:", data.data);
+    
     if (res.ok) {
       renderCards(data.data || [], container);
       countDisplay.textContent = `${data.data.length} items available`;
@@ -128,26 +151,20 @@ async function fetchAllItems() {
   }
 }
 
-async function fetchMyListings() {
-  try {
-    const res = await fetch("http://localhost:5000/api/items/my-listings");
-    const data = await res.json();
-    if (res.ok) {
-      renderCards(data.data || [], myListingsContainer);
-    } else {
-      console.error("Failed to fetch my listings:", data.error);
-    }
-  } catch (err) {
-    console.error("Network error:", err);
-  }
-}
+// This function is no longer needed on the main dashboard
+// My listings are now on a separate page (mylisting.html)
 
 // ---------------------------------------------
 // 5. Filter & Search Logic
 // ---------------------------------------------
 async function handleFilterAndSearch() {
   try {
-    const res = await fetch("http://localhost:5000/api/items");
+    const userId = localStorage.getItem("userId");
+    const url = userId 
+      ? `http://localhost:5000/api/items/all?userId=${userId}`
+      : "http://localhost:5000/api/items/all";
+    
+    const res = await fetch(url);
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Server Error");
 
@@ -242,11 +259,92 @@ document.querySelector(".give-btn").addEventListener("click", () => {
   window.location.href = "listing.html";
 });
 
+// ---------------------------------------------
+// 7. Exchange Request Handlers
+// ---------------------------------------------
+async function createExchangeRequest(itemId, itemName, itemOwnerId, requestType) {
+  const userId = localStorage.getItem("userId");
+  
+  if (!userId) {
+    alert("Please login to make a request");
+    window.location.href = "index.html";
+    return;
+  }
+  
+  // Check if trying to request own item
+  if (userId === itemOwnerId) {
+    alert("You cannot request your own item!");
+    return;
+  }
+  
+  // Get message from user
+  const message = prompt(
+    requestType === 'Claim' 
+      ? "Enter your message to claim this item:" 
+      : "Enter your message to contact the seller:",
+    "Hi, I'm interested in this item."
+  );
+  
+  if (!message || message.trim() === "") {
+    alert("Message is required!");
+    return;
+  }
+  
+  // For barter items, ask if they want to offer something
+  let offeredItemName = null;
+  const shouldAskOffer = confirm("Would you like to offer something in exchange? (Click Cancel if not)");
+  if (shouldAskOffer) {
+    offeredItemName = prompt("What would you like to offer in exchange?");
+  }
+  
+  try {
+    const response = await fetch("http://localhost:5000/api/exchange-requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requesterId: userId,
+        itemId: itemId,
+        itemName: itemName,
+        itemOwnerId: itemOwnerId,
+        requestType: requestType,
+        message: message.trim(),
+        offeredItemName: offeredItemName ? offeredItemName.trim() : null
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      alert("✅ " + result.message);
+      itemModal.style.display = "none"; // Close modal
+    } else {
+      alert("❌ " + result.message);
+    }
+  } catch (error) {
+    console.error("Error creating exchange request:", error);
+    alert("Failed to send request. Please check your connection.");
+  }
+}
+
+// Attach event listeners to modal buttons
+document.getElementById("requestItemBtn").addEventListener("click", function() {
+  const itemId = this.getAttribute("data-item-id");
+  const itemName = this.getAttribute("data-item-name");
+  const itemOwnerId = this.getAttribute("data-item-owner-id");
+  createExchangeRequest(itemId, itemName, itemOwnerId, "Claim");
+});
+
+document.getElementById("contactSellerBtn").addEventListener("click", function() {
+  const itemId = this.getAttribute("data-item-id");
+  const itemName = this.getAttribute("data-item-name");
+  const itemOwnerId = this.getAttribute("data-item-owner-id");
+  createExchangeRequest(itemId, itemName, itemOwnerId, "Contact");
+});
+
 // Initial Load
 fetchAllItems();
+
+// Clear the new listing flag if present (used to trigger refresh on My Listings page)
 if (localStorage.getItem("newListingPosted") === "true") {
-  fetchMyListings(); // Refresh My Listings
-  localStorage.removeItem("newListingPosted"); // Clear the flag
-} else {
-  fetchMyListings(); // Normal load
+  localStorage.removeItem("newListingPosted");
 }

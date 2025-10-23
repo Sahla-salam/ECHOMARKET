@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Exchange Request Dashboard</title>
+  <link rel="stylesheet" href="css/search_css.css">
+  <style>
+    body{font-family: Arial, sans-serif; padding:0; margin: 0; background:#04183a;}
+    .main-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .card{
+      background:white;
+      padding:20px;
+      margin-bottom:15px;
+      border-radius:8px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    }
+    .card p {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    .btn{
+      padding:8px 15px;
+      margin-right:8px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-accept{background:#28a745;color:white}
+    .btn-accept:hover{background:#218838}
+    .btn-decline{background:#dc3545;color:white}
+    .btn-decline:hover{background:#c82333}
+    .btn-message{background:#2196F3;color:white}
+    .status{font-weight:bold}
+    .refresh-btn {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .refresh-btn:hover {
+      background: #1e4ed8;
+    }
+    #requests-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <h2 class="logo">ECHOMARKET</h2>
+    <div class="location">📍 Kollam, Kerala</div>
+    <button class="give-btn" onclick="window.location.href='listing.html'">+ Give/Barter</button>
+    <button class="mylisting-btn" onclick="window.location.href='mylisting.html'">My Listings</button>
+    <button class="exchange-btn active" onclick="window.location.href='exchange_req.html'">Exchange/Request</button>
+    <button class="back-btn" onclick="window.location.href='search.html'">← Back to Dashboard</button>
+  </header>
+
+  <div class="main-container">
+    <h2>📬 Exchange Requests</h2>
+    
+    <button onclick="refreshRequests()" class="refresh-btn">🔄 Refresh Requests</button>
+    
+    <div id="requests-container"></div>
+  </div>
+
+  <script src="js/exchange_req.js"></script>
+</body>
+</html>

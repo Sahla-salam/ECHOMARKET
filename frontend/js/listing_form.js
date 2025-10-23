@@ -97,9 +97,14 @@ form.addEventListener("submit", async function (e) {
         payload.append("images", files[i]);
     }
     
-    // F. Append TEMP_OWNER_ID 
-    const TEMP_OWNER_ID = "60c72b2295d85200155b11d9"; // Replace with real authenticated user ID later
-    payload.append("owner", TEMP_OWNER_ID);
+    // F. Append User ID from localStorage
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+        alert("Please login first!");
+        window.location.href = "index.html";
+        return;
+    }
+    payload.append("userId", userId);
 
     try {
         // Send the POST request
@@ -117,11 +122,11 @@ form.addEventListener("submit", async function (e) {
             alert("Listing Posted Successfully! 🎉");
             console.log("New Item Created:", result.data);
             
-            // Cleanup and Redirect
+            // Cleanup and Redirect to My Listings page
             form.reset();
             updateConditionalFields();
             localStorage.setItem("newListingPosted", "true");
-            window.location.href = "search.html";
+            window.location.href = "mylisting.html";
         } else {
             console.error("Submission Failed:", result);
             alert(

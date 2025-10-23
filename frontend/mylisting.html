@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Listings - EchoMarket</title>
+    <link rel="stylesheet" href="css/search_css.css">
+</head>
+<body>
+    <header class="navbar">
+        <h2 class="logo">ECHOMARKET</h2>
+        <div class="location">📍 Kollam, Kerala</div>
+        <button class="give-btn">+ Give/Barter</button>
+        <button class="mylisting-btn active">My Listings</button>
+        <button class="exchange-btn">Exchange/Request</button>
+        <button class="back-btn">← Back to Dashboard</button>
+    </header>
+
+    <main class="main-content-full">
+        <section class="results">
+            <div class="results-header">
+                <h2 style="color: #fff;">My Listings</h2>
+                <div>
+                    <p id="count" style="color: #fff;">Loading...</p>
+                </div>
+            </div>
+
+            <div id="myListings" class="card-container">
+                <!-- My listings will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Item Detail Modal (Same as search.html) -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            
+            <div class="modal-grid">
+                
+                <div class="modal-gallery">
+                    <div id="modal-image-gallery">
+                        </div>
+                </div>
+                
+                <div class="modal-info">
+                    <h2 id="modal-title">Item Title Loading...</h2>
+                    
+                    <div class="modal-tags">
+                        <span class="tag-listing-type" id="modal-type">Type</span>
+                        <span class="tag-condition" id="modal-condition">Condition</span>
+                        <span class="tag-category" id="modal-category">Category</span>
+                    </div>
+                    
+                    <hr>
+
+                    <p class="detail-line"><label>Description:</label></p>
+                    <p id="modal-description" class="detail-description"></p>
+                    
+                    <div id="modal-barter-section" class="detail-section" style="display:none;">
+                        <p class="detail-line"><label>Looking For (Barter Preference):</label></p>
+                        <p id="modal-barter-text" class="detail-barter-pref"></p>
+                    </div>
+                    
+                    <p class="detail-line"><label>Location:</label> <span id="modal-location"></span></p>
+                    <p class="detail-line"><label>Community Tag:</label> <span id="modal-community"></span></p>
+                    <p class="detail-line"><label>Expiry Date:</label> <span id="modal-expiry"></span></p>
+
+                    <div class="modal-actions">
+                        <button id="editItemBtn" class="action-btn primary-btn">Edit Listing</button>
+                        <button id="deleteItemBtn" class="action-btn delete-btn">Delete Listing</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mylisting_script.js"></script>
+</body>
+</html>
+
+<script>
+    document.querySelector('.give-btn').addEventListener('click', function() {
+        window.location.href = 'listing.html';
+    });
+    
+    document.querySelector('.mylisting-btn').addEventListener('click', function() {
+        window.location.href = 'mylisting.html';
+    });
+    
+    document.querySelector('.exchange-btn').addEventListener('click', function() {
+        window.location.href = 'exchange_req.html';
+    });
+    
+    document.querySelector('.back-btn').addEventListener('click', function() {
+        window.location.href = 'search.html';
+    });
+</script>
+

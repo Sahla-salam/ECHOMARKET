@@ -38,6 +38,7 @@ async function login() {
 
   if (res.ok) {
     localStorage.setItem("username", data.name);
+    localStorage.setItem("userId", data.userId);
     window.location.href = "search.html";
   }
 }
