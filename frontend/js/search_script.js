@@ -21,30 +21,84 @@ window.onclick = function (event) {
 };
 
 // ---------------------------------------------
-// 2. Helper: Show Item Modal (ENHANCED for full data)
+// 2. Helper: Image Gallery Renderer 🖼️
+// ---------------------------------------------
+function renderImageGallery(images, itemTitle) {
+  // 🟢 NEW IDs used here
+  const mainDisplay = document.getElementById("modal-main-image-display");
+  const thumbnailsContainer = document.getElementById("modal-image-thumbnails");
+
+  // Clear previous content
+  mainDisplay.innerHTML = "";
+  thumbnailsContainer.innerHTML = "";
+
+  if (!images || images.length === 0) {
+    mainDisplay.innerHTML = `<p>No image available.</p>`;
+    return;
+  }
+
+  // A. Set the initial large image
+  // Note: The 'modal-main-image' class should have styling for max-width/height
+  mainDisplay.innerHTML = `<img src="${images[0]}" alt="${itemTitle} 1" class="modal-main-image">`;
+
+  // B. Create and append thumbnails/indicators
+  images.forEach((url, index) => {
+    const thumbnail = document.createElement("img");
+    thumbnail.src = url;
+    thumbnail.alt = `${itemTitle} ${index + 1}`;
+    thumbnail.classList.add("modal-thumbnail");
+    if (index === 0) {
+      thumbnail.classList.add("active-thumbnail"); // Highlight the default selected image
+    }
+    thumbnail.setAttribute("data-image-index", index);
+
+    // C. Add click handler for image switching
+    thumbnail.addEventListener("click", () => {
+      // Update the main image source
+      mainDisplay.querySelector(".modal-main-image").src = url;
+
+      // Update active state for thumbnails
+      thumbnailsContainer.querySelectorAll(".modal-thumbnail").forEach((t) => {
+        t.classList.remove("active-thumbnail");
+      });
+      thumbnail.classList.add("active-thumbnail");
+    });
+
+    thumbnailsContainer.appendChild(thumbnail);
+  });
+}
+
+// ---------------------------------------------
+// 3. Helper: Show Item Modal (UPDATED to call Gallery Renderer)
 // ---------------------------------------------
 async function showItemModal(itemId) {
   try {
     const res = await fetch(`http://localhost:5000/api/items/${itemId}`);
     const result = await res.json();
+
     if (!res.ok)
       throw new Error(result.error || "Could not fetch item details.");
-    const item = result.data; // 1. Populate the Modal Content
+
+    const item = result.data;
+
+    // 1. Populate the Modal Content
     document.getElementById("modal-title").textContent = item.title;
     document.getElementById("modal-description").textContent = item.description;
     document.getElementById("modal-condition").textContent = item.itemCondition;
     document.getElementById("modal-type").textContent = item.listingType;
-    // 🟢 NEW: Populate the detailed metadata fields
+
+    // Populate the detailed metadata fields
     document.getElementById("modal-category").textContent =
       item.category || "N/A";
     document.getElementById("modal-location").textContent =
       item.location || "N/A";
     document.getElementById("modal-community").textContent =
       item.community || "N/A";
-    // Format date, or display N/A if missing
     document.getElementById("modal-expiry").textContent = item.expiryDate
       ? new Date(item.expiryDate).toLocaleDateString()
-      : "N/A"; // Handle Barter Preferences visibility (using the new correct ID)
+      : "N/A";
+
+    // Handle Barter Preferences visibility
     const barterPrefSection = document.getElementById("modal-barter-section");
     if (item.listingType === "Barter" && item.barterPreferences) {
       document.getElementById("modal-barter-text").textContent =
@@ -52,21 +106,20 @@ async function showItemModal(itemId) {
       barterPrefSection.style.display = "block";
     } else {
       barterPrefSection.style.display = "none";
-    } // 2. Display Modal Image
+    }
 
-    const gallery = document.getElementById("modal-image-gallery");
-    gallery.innerHTML =
-      item.images && item.images.length
-        ? `<img src="${item.images[0]}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
-        : `<p>No image available.</p>`; // 3. Attach item ID to buttons for future action
+    // 🟢 CRITICAL UPDATE: Call the new gallery renderer
+    renderImageGallery(item.images, item.title);
 
+    // 3. Attach item ID to buttons for future action
     document
       .getElementById("contactSellerBtn")
       .setAttribute("data-item-id", itemId);
     document
       .getElementById("requestItemBtn")
-      .setAttribute("data-item-id", itemId); // 4. Display the Modal
+      .setAttribute("data-item-id", itemId);
 
+    // 4. Display the Modal
     itemModal.style.display = "block";
   } catch (error) {
     console.error("Error showing item modal:", error);
@@ -75,7 +128,7 @@ async function showItemModal(itemId) {
 }
 
 // ---------------------------------------------
-// 3. Render Cards Function (Includes Modal Click Handler)
+// 4. Render Cards Function
 // ---------------------------------------------
 function renderCards(data, containerElement) {
   containerElement.innerHTML = "";
@@ -89,19 +142,20 @@ function renderCards(data, containerElement) {
       : "";
 
     card.innerHTML = `
-            ${imageHtml}
-            <span class="tag ${item.listingType?.toLowerCase() || ""}">${
+            ${imageHtml}
+            <span class="tag ${item.listingType?.toLowerCase() || ""}">${
       item.listingType
     }</span>
-            <h3>${item.title}</h3>
-            <p><b>Category:</b> ${item.category || "N/A"}</p>
-            <p><b>Condition:</b> ${item.itemCondition || "N/A"}</p>
-            <p><b>Location:</b> ${item.location || "N/A"}</p>
-            <p><b>Community:</b> ${item.community || "N/A"}</p>
-        `;
+            <h3>${item.title}</h3>
+            <p><b>Category:</b> ${item.category || "N/A"}</p>
+            <p><b>Condition:</b> ${item.itemCondition || "N/A"}</p>
+            <p><b>Location:</b> ${item.location || "N/A"}</p>
+            <p><b>Community:</b> ${item.community || "N/A"}</p>
+        `;
     containerElement.appendChild(card);
-  }); // Attach click listeners to all rendered cards for modal functionality
+  });
 
+  // Attach click listeners to all rendered cards for modal functionality
   document.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", (e) => {
       const itemId = e.currentTarget.getAttribute("data-item-id");
@@ -111,7 +165,7 @@ function renderCards(data, containerElement) {
 }
 
 // ---------------------------------------------
-// 4. Fetch All Items & My Listings
+// 5. Fetch All Items & My Listings
 // ---------------------------------------------
 async function fetchAllItems() {
   try {
@@ -143,7 +197,7 @@ async function fetchMyListings() {
 }
 
 // ---------------------------------------------
-// 5. Filter & Search Logic
+// 6. Filter & Search Logic
 // ---------------------------------------------
 async function handleFilterAndSearch() {
   try {
@@ -151,7 +205,7 @@ async function handleFilterAndSearch() {
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Server Error");
 
-    let items = result.data || []; // Get filter values
+    let items = result.data || [];
 
     const searchKeyword = document.getElementById("search").value.toLowerCase();
     const selectedCategory = document.getElementById("category").value;
@@ -215,7 +269,7 @@ async function handleFilterAndSearch() {
 }
 
 // ---------------------------------------------
-// 6. Event Listeners & Initial Load
+// 7. Event Listeners & Initial Load
 // ---------------------------------------------
 document
   .getElementById("searchBtn")

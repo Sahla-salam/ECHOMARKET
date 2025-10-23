@@ -1,88 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EchoMarket - Search & Filter</title>
-    <link rel="stylesheet" href="css/search_css.css"> 
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoMarket - Search & Filter</title>
+    <link rel="stylesheet" href="css/search_css.css"> 
+</head>
 <body>
-    <header class="navbar">
-        <h2 class="logo">ECHOMARKET</h2>
-        <div class="location">📍 Kollam, Kerala</div>
-        <button class="give-btn">+ Give/Barter</button>
-    </header>
+    <header class="navbar">
+        <h2 class="logo">ECHOMARKET</h2>
+        <div class="location">📍 Kollam, Kerala</div>
+        <button class="give-btn">+ Give/Barter</button>
+    </header>
 
-    <section class="search-bar">
-        <input type="text" id="search" placeholder="Enter keywords (e.g., furniture, books, laptop...)" />
-        <button id="searchBtn">Search</button>
-    </section>
+    <section class="search-bar">
+        <input type="text" id="search" placeholder="Enter keywords (e.g., furniture, books, laptop...)" />
+        <button id="searchBtn">Search</button>
+    </section>
 
-    <section class="filter-controls">
-        <select id="category">
-            <option>All Categories</option>
-            <option>Furniture</option>
-            <option>Books</option>
-            <option>Electronics</option>
-            <option>Clothing</option>
-            <option>Toys</option>
-            <option>Others</option>
-        </select>
-        <select id="type">
-            <option>All Types</option>
-            <option value="Freebie">Freebie</option>
-            <option value="Barter">Barter</option>
-            <option value="Request">Request</option> </select>
-        <select id="condition">
-            <option>Any Condition</option>
-            <option value="New">New</option>
-            <option value="Used">Used</option>
-        </select>
-        <input type="text" id="pincode" placeholder="Pincode/Locality">
-        <select id="community">
-            <option>All Communities</option>
-            <option>Eco Warriors</option>
-            <option>College Students</option>
-            <option>Manhattan Residents</option>
-        </select>
-    </section>
+    <section class="filter-controls">
+        <select id="category">
+            <option>All Categories</option>
+            <option>Furniture</option>
+            <option>Books</option>
+            <option>Electronics</option>
+            <option>Clothing</option>
+            <option>Toys</option>
+            <option>Others</option>
+        </select>
+        <select id="type">
+            <option>All Types</option>
+            <option value="Freebie">Freebie</option>
+            <option value="Barter">Barter</option>
+            <option value="Request">Request</option>
+        </select>
+        <select id="condition">
+            <option>Any Condition</option>
+            <option value="New">New</option>
+            <option value="Used">Used</option>
+        </select>
+        <input type="text" id="pincode" placeholder="Pincode/Locality">
+        <select id="community">
+            <option>All Communities</option>
+            <option>Eco Warriors</option>
+            <option>College Students</option>
+            <option>Manhattan Residents</option>
+        </select>
+    </section>
 
-    <main class="main-content">
-        <aside class="filters">
-            <h3>Filters</h3>
-            <p><strong>Exchange Type</strong></p>
-            <label><input type="checkbox" id="freebie"> Free Giveaway</label><br>
-            <label><input type="checkbox" id="barter"> Barter/Trade</label>
-            <button onclick="window.location.href='listing.html'">Add Product</button>
+    <main class="main-content">
+        <aside class="filters">
+            <h3>Filters</h3>
+            <p><strong>Exchange Type</strong></p>
+            <label><input type="checkbox" id="freebie"> Free Giveaway</label><br>
+            <label><input type="checkbox" id="barter"> Barter/Trade</label>
+            <button onclick="window.location.href='listing.html'">Add Product</button>
 
 
-            <p><strong>Condition</strong></p>
-            <label><input type="checkbox" id="new"> New</label><br>
-            <label><input type="checkbox" id="used"> Used</label>
+            <p><strong>Condition</strong></p>
+            <label><input type="checkbox" id="new"> New</label><br>
+            <label><input type="checkbox" id="used"> Used</label>
 
-            <button id="applyFilters">Apply Filters</button>
-            <button id="clearFilters" class="clear">Clear All</button>
-        </aside>
+            <button id="applyFilters">Apply Filters</button>
+            <button id="clearFilters" class="clear">Clear All</button>
+        </aside>
 
-        <section class="results">
-            <div class="results-header">
-                <p id="count">4 items available</p>
-                <div>
-                    Sort by:
-                    <select id="sort">
-                        <option>Newest</option>
-                        <option>Oldest</option>
-                    </select>
-                </div>
-            </div>
+        <section class="results">
+            <div class="results-header">
+                <p id="count">4 items available</p>
+                <div>
+                    Sort by:
+                    <select id="sort">
+                        <option>Newest</option>
+                        <option>Oldest</option>
+                    </select>
+                </div>
+            </div>
 
-            <div id="cards" class="card-container">
-                </div>
-            <h3>My Listings</h3>
-            <div id="myListings" class="card-container">
-                </div>
-        </section>
-    </main>
+            <div id="cards" class="card-container">
+            </div>
+            <h3>My Listings</h3>
+            <div id="myListings" class="card-container">
+            </div>
+        </section>
+    </main>
 
     <div id="itemModal" class="modal">
         <div class="modal-content">
@@ -91,8 +92,10 @@
             <div class="modal-grid">
                 
                 <div class="modal-gallery">
-                    <div id="modal-image-gallery">
-                        </div>
+                    <div id="modal-main-image-display" class="main-image-display">
+                    </div>
+                    <div id="modal-image-thumbnails" class="image-thumbnails">
+                    </div>
                 </div>
                 
                 <div class="modal-info">
@@ -126,6 +129,6 @@
             </div>
         </div>
     </div>
-    <script src="js/search_script.js"></script>
+    <script src="js/search_script.js"></script>
 </body>
 </html>
