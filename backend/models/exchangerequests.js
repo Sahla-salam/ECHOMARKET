@@ -32,6 +32,10 @@ const exchangeRequestSchema = new mongoose.Schema({
     ref: 'User',
     required: true 
   },
+  itemOwnerName: {
+    type: String,
+    required: true
+  },
   
   // Request details
   requestType: {

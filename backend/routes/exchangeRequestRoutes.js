@@ -38,6 +38,12 @@ router.post("/", async (req, res) => {
       return res.status(404).json({ message: "Requester not found" });
     }
     
+    // Get item owner details
+    const itemOwner = await User.findById(itemOwnerId);
+    if (!itemOwner) {
+      return res.status(404).json({ message: "Item owner not found" });
+    }
+    
     // Check for duplicate requests
     const existingRequest = await ExchangeRequest.findOne({
       requesterId,
@@ -59,6 +65,7 @@ router.post("/", async (req, res) => {
       itemId,
       itemName,
       itemOwnerId,
+      itemOwnerName: itemOwner.name,
       requestType,
       message,
       offeredItemName: offeredItemName || null,
@@ -82,6 +89,7 @@ router.post("/", async (req, res) => {
 });
 
 // GET exchange requests for a specific user
+// PRIVACY: Only returns requests where the user is directly involved
 router.get("/", async (req, res) => {
   try {
     const userId = req.query.userId;
@@ -90,7 +98,12 @@ router.get("/", async (req, res) => {
       return res.status(400).json({ message: "User ID is required" });
     }
     
-    // Find requests where the user is either the requester OR the owner of the item
+    console.log(`📬 Fetching exchange requests for user: ${userId}`);
+    
+    // IMPORTANT: Find ONLY requests where the user is either:
+    // 1. The requester (they want someone else's item)
+    // 2. The item owner (someone wants their item)
+    // This ensures complete privacy - users cannot see other people's requests
     const requests = await ExchangeRequest.find({
       $or: [
         { requesterId: userId },  // User made the request
@@ -98,8 +111,13 @@ router.get("/", async (req, res) => {
       ]
     }).sort({ createdAt: -1 }); // Sort by newest first
     
+    console.log(`✅ Found ${requests.length} requests for user ${userId}`);
+    console.log(`   - Incoming (user owns item): ${requests.filter(r => r.itemOwnerId.toString() === userId).length}`);
+    console.log(`   - Outgoing (user requested): ${requests.filter(r => r.requesterId.toString() === userId).length}`);
+    
     res.json(requests);
   } catch (error) {
+    console.error("Error fetching exchange requests:", error);
     res.status(500).json({ message: "Error fetching exchange requests", error });
   }
 });

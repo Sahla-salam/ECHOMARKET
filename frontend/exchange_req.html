@@ -57,6 +57,50 @@
     #requests-container {
       margin-top: 20px;
     }
+    .tabs-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+    }
+    .tab-btn {
+      padding: 12px 24px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .tab-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .tab-btn.active {
+      border-bottom-color: #28a745;
+      background: rgba(255,255,255,0.05);
+    }
+    .tab-badge {
+      background: #28a745;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -72,9 +116,24 @@
   <div class="main-container">
     <h2>📬 Exchange Requests</h2>
     
-    <button onclick="refreshRequests()" class="refresh-btn">🔄 Refresh Requests</button>
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('incoming')" id="incoming-tab">
+        📥 Incoming Requests <span id="incoming-count" class="tab-badge">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('outgoing')" id="outgoing-tab">
+        📤 Outgoing Requests <span id="outgoing-count" class="tab-badge">0</span>
+      </button>
+    </div>
     
-    <div id="requests-container"></div>
+    <button onclick="refreshRequests()" class="refresh-btn">🔄 Refresh</button>
+    
+    <div id="incoming-container" class="tab-content active">
+      <!-- Incoming requests will be loaded here -->
+    </div>
+    
+    <div id="outgoing-container" class="tab-content">
+      <!-- Outgoing requests will be loaded here -->
+    </div>
   </div>
 
   <script src="js/exchange_req.js"></script>

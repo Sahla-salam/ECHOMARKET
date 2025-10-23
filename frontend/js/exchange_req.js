@@ -1,63 +1,127 @@
-const container = document.getElementById("requests-container");
+const incomingContainer = document.getElementById("incoming-container");
+const outgoingContainer = document.getElementById("outgoing-container");
+let allRequests = []; // Store all requests globally
+
+// Helper function to create a request card
+function createRequestCard(req, isOwner, userId) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.setAttribute("data-id", req._id);
+  
+  const requestDate = new Date(req.createdAt).toLocaleString();
+  let statusColor = req.status === 'Accepted' ? 'green' : 
+                    req.status === 'Declined' ? 'red' : 'orange';
+
+  card.innerHTML = `
+    <div style="background: ${isOwner ? '#e8f5e9' : '#e3f2fd'}; padding: 8px; border-radius: 4px; margin-bottom: 10px;">
+      <strong style="color: ${isOwner ? '#28a745' : '#2563eb'};">
+        ${isOwner ? '📥 INCOMING REQUEST' : '📤 OUTGOING REQUEST'}
+      </strong>
+    </div>
+    <p><strong>Type:</strong> <span style="background: #2563eb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">${req.requestType}</span></p>
+    <p><strong>${isOwner ? 'From' : 'To'}:</strong> ${isOwner ? req.requesterName : (req.itemOwnerName || 'Item Owner')}</p>
+    <p><strong>Item:</strong> ${req.itemName}</p>
+    ${req.offeredItemName ? `<p><strong>Offered in Exchange:</strong> ${req.offeredItemName}</p>` : ''}
+    <p><strong>Message:</strong> "${req.message}"</p>
+    ${isOwner && req.requesterEmail ? `<p><strong>Contact Email:</strong> ${req.requesterEmail}</p>` : ''}
+    <p><strong>Date:</strong> ${requestDate}</p>
+    <p class="status"><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold; font-size: 16px;">${req.status.toUpperCase()}</span></p>
+    ${isOwner && req.status === 'Pending' ? `
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee;">
+        <p style="margin-bottom: 10px; font-weight: 600;">⚡ Action Required:</p>
+        <button class="btn btn-accept" onclick="updateStatus('${req._id}', 'Accepted')">✅ Accept Request</button>
+        <button class="btn btn-decline" onclick="updateStatus('${req._id}', 'Declined')">❌ Decline Request</button>
+      </div>
+    ` : ''}
+    ${!isOwner && req.status === 'Pending' ? `<p style="font-size: 13px; color: #666; margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 4px;"><strong>⏳ Status:</strong> Waiting for owner's response...</p>` : ''}
+    ${!isOwner && req.status === 'Accepted' ? `<p style="font-size: 13px; color: green; margin-top: 10px; padding: 10px; background: #d4edda; border-radius: 4px;"><strong>🎉 Great news!</strong> Your request was accepted. The owner will contact you soon!</p>` : ''}
+    ${!isOwner && req.status === 'Declined' ? `<p style="font-size: 13px; color: #856404; margin-top: 10px; padding: 10px; background: #f8d7da; border-radius: 4px;"><strong>😔 Sorry,</strong> This request was declined by the owner.</p>` : ''}
+  `;
+
+  return card;
+}
+
+// Switch between tabs
+function switchTab(tabName) {
+  // Update tab buttons
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tabName + '-tab').classList.add('active');
+  
+  // Update tab content
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  document.getElementById(tabName + '-container').classList.add('active');
+}
+
+// Render requests for a specific container
+function renderRequests(requests, containerElement, isIncoming, userId) {
+  containerElement.innerHTML = "";
+  
+  if (requests.length === 0) {
+    containerElement.innerHTML = `
+      <div style="padding: 60px; text-align: center; background: white; border-radius: 8px;">
+        <h3 style="color: #666; font-size: 24px; margin: 0;">Nothing to see here</h3>
+        <p style="color: #999; margin-top: 10px;">${isIncoming ? 'No one has requested your items yet' : "You haven't made any requests yet"}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  requests.forEach((req) => {
+    const card = createRequestCard(req, isIncoming, userId);
+    containerElement.appendChild(card);
+  });
+}
 
 // ✅ Fetch and display requests for the logged-in user
 async function fetchRequests() {
   try {
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      container.innerHTML = "<p>Please login to view exchange requests.</p>";
+      incomingContainer.innerHTML = "<p>Please login to view exchange requests.</p>";
+      outgoingContainer.innerHTML = "<p>Please login to view exchange requests.</p>";
       return;
     }
     
     const response = await fetch(`http://localhost:5000/api/exchange-requests?userId=${userId}`);
     const data = await response.json();
 
-    container.innerHTML = "";
-
-    if (data.length === 0) {
-      container.innerHTML = `
-        <div style="padding: 40px; text-align: center; background: white; border-radius: 8px;">
-          <h3>No exchange requests yet</h3>
-          <p>When someone requests your items or you request others' items, they will appear here.</p>
-        </div>
-      `;
-      return;
-    }
+    console.log("📊 All requests received:", data);
+    console.log("👤 Current userId:", userId);
     
-    data.forEach((req) => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.setAttribute("data-id", req._id); // Store ID on the card
-      
-      const userId = localStorage.getItem("userId");
-      const isOwner = req.itemOwnerId === userId; // Check if current user is the item owner
-      const requestDate = new Date(req.createdAt).toLocaleString();
-      
-      let statusColor = req.status === 'Accepted' ? 'green' : 
-                        req.status === 'Declined' ? 'red' : 'orange';
-
-      card.innerHTML = `
-        <p><strong>Type:</strong> <span style="background: #2563eb; color: white; padding: 3px 8px; border-radius: 4px; font-size: 12px;">${req.requestType}</span></p>
-        <p><strong>${isOwner ? 'Requester' : 'Your Request To'}:</strong> ${req.requesterName} ${isOwner ? '' : '(You)'}</p>
-        <p><strong>Item:</strong> ${req.itemName}</p>
-        ${req.offeredItemName ? `<p><strong>Offered Item:</strong> ${req.offeredItemName}</p>` : ''}
-        <p><strong>Message:</strong> ${req.message}</p>
-        ${req.requesterEmail ? `<p><strong>Contact:</strong> ${req.requesterEmail}</p>` : ''}
-        <p><strong>Date:</strong> ${requestDate}</p>
-        <p class="status"><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: bold;">${req.status}</span></p>
-        ${isOwner && req.status === 'Pending' ? `
-          <div style="margin-top: 10px;">
-            <button class="btn btn-accept" onclick="updateStatus('${req._id}', 'Accepted')">Accept</button>
-            <button class="btn btn-decline" onclick="updateStatus('${req._id}', 'Declined')">Decline</button>
-          </div>
-        ` : ''}
-        ${!isOwner ? `<p style="font-size: 12px; color: #666; margin-top: 10px;"><em>Waiting for response from owner...</em></p>` : ''}
-      `;
-
-      container.appendChild(card);
+    // Store globally
+    allRequests = data;
+    
+    // Separate requests into two categories
+    // Convert ObjectIds to strings for comparison
+    const incomingRequests = data.filter(req => {
+      const ownerId = typeof req.itemOwnerId === 'object' ? req.itemOwnerId.toString() : req.itemOwnerId;
+      return ownerId === userId;
     });
+    
+    const outgoingRequests = data.filter(req => {
+      const requesterId = typeof req.requesterId === 'object' ? req.requesterId.toString() : req.requesterId;
+      return requesterId === userId;
+    });
+    
+    console.log("📥 Incoming requests:", incomingRequests.length);
+    console.log("📤 Outgoing requests:", outgoingRequests.length);
+    
+    // Update tab badges
+    document.getElementById('incoming-count').textContent = incomingRequests.length;
+    document.getElementById('outgoing-count').textContent = outgoingRequests.length;
+    
+    // Render both tabs
+    renderRequests(incomingRequests, incomingContainer, true, userId);
+    renderRequests(outgoingRequests, outgoingContainer, false, userId);
+    
   } catch (error) {
     console.error("Error fetching requests:", error);
+    incomingContainer.innerHTML = `
+      <div style="padding: 40px; text-align: center; background: white; border-radius: 8px; color: red;">
+        <h3>Error loading requests</h3>
+        <p>Please check your connection and try again.</p>
+      </div>
+    `;
   }
 }
 
@@ -71,16 +135,11 @@ async function updateStatus(id, newStatus) {
     });
 
     if (response.ok) {
-      const card = document.querySelector(`[data-id='${id}']`);
-      const statusSpan = card.querySelector(".status span");
-
-      // 🟢 Update UI immediately
-      statusSpan.textContent = newStatus;
-      statusSpan.style.color = newStatus === "Accepted" ? "green" : "red";
-
       // 🪄 Show confirmation message
       alert(`Request ${newStatus === "Accepted" ? "accepted ✅" : "declined ❌"}`);
-
+      
+      // Refresh the requests to update the UI
+      fetchRequests();
     } else {
       alert("Failed to update status 😕");
     }
@@ -90,10 +149,12 @@ async function updateStatus(id, newStatus) {
   }
 }
 
-// Refresh requests function (called by the refresh button)
-function refreshRequests() {
+// Make functions globally accessible
+window.switchTab = switchTab;
+window.updateStatus = updateStatus;
+window.refreshRequests = function() {
   fetchRequests();
-}
+};
 
 // Load the requests when the page opens
 fetchRequests();
