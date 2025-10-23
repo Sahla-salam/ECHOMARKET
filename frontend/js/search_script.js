@@ -28,22 +28,26 @@ async function showItemModal(itemId) {
     const result = await res.json();
     if (!res.ok)
       throw new Error(result.error || "Could not fetch item details.");
-    const item = result.data; // 1. Populate the Modal Content
+    const item = result.data;
+
+    // 1. Populate the Modal Content
     document.getElementById("modal-title").textContent = item.title;
     document.getElementById("modal-description").textContent = item.description;
     document.getElementById("modal-condition").textContent = item.itemCondition;
     document.getElementById("modal-type").textContent = item.listingType;
-    // 🟢 NEW: Populate the detailed metadata fields
+
     document.getElementById("modal-category").textContent =
       item.category || "N/A";
     document.getElementById("modal-location").textContent =
       item.location || "N/A";
     document.getElementById("modal-community").textContent =
       item.community || "N/A";
-    // Format date, or display N/A if missing
+
     document.getElementById("modal-expiry").textContent = item.expiryDate
       ? new Date(item.expiryDate).toLocaleDateString()
-      : "N/A"; // Handle Barter Preferences visibility (using the new correct ID)
+      : "N/A";
+
+    // Handle Barter Preferences visibility
     const barterPrefSection = document.getElementById("modal-barter-section");
     if (item.listingType === "Barter" && item.barterPreferences) {
       document.getElementById("modal-barter-text").textContent =
@@ -51,15 +55,16 @@ async function showItemModal(itemId) {
       barterPrefSection.style.display = "block";
     } else {
       barterPrefSection.style.display = "none";
-    } // 2. Display Modal Image
+    }
 
+    // 2. Display Modal Image
     const gallery = document.getElementById("modal-image-gallery");
     gallery.innerHTML =
       item.images && item.images.length
         ? `<img src="${item.images[0]}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
-        : `<p>No image available.</p>`; // 3. Attach item ID to buttons for future action
+        : `<p>No image available.</p>`;
 
-    // Attach item ID, owner ID, and item name to buttons
+    // 3. Attach item ID to buttons for future action
     document
       .getElementById("contactSellerBtn")
       .setAttribute("data-item-id", itemId);
@@ -69,7 +74,7 @@ async function showItemModal(itemId) {
     document
       .getElementById("contactSellerBtn")
       .setAttribute("data-item-name", item.title);
-      
+
     document
       .getElementById("requestItemBtn")
       .setAttribute("data-item-id", itemId);
@@ -103,19 +108,20 @@ function renderCards(data, containerElement) {
       : "";
 
     card.innerHTML = `
-            ${imageHtml}
-            <span class="tag ${item.listingType?.toLowerCase() || ""}">${
+            ${imageHtml}
+            <span class="tag ${item.listingType?.toLowerCase() || ""}">${
       item.listingType
     }</span>
-            <h3>${item.title}</h3>
-            <p><b>Category:</b> ${item.category || "N/A"}</p>
-            <p><b>Condition:</b> ${item.itemCondition || "N/A"}</p>
-            <p><b>Location:</b> ${item.location || "N/A"}</p>
-            <p><b>Community:</b> ${item.community || "N/A"}</p>
-        `;
+            <h3>${item.title}</h3>
+            <p><b>Category:</b> ${item.category || "N/A"}</p>
+            <p><b>Condition:</b> ${item.itemCondition || "N/A"}</p>
+            <p><b>Location:</b> ${item.location || "N/A"}</p>
+            <p><b>Community:</b> ${item.community || "N/A"}</p>
+        `;
     containerElement.appendChild(card);
-  }); // Attach click listeners to all rendered cards for modal functionality
+  });
 
+  // Attach click listeners to all rendered cards for modal functionality
   document.querySelectorAll(".card").forEach((card) => {
     card.addEventListener("click", (e) => {
       const itemId = e.currentTarget.getAttribute("data-item-id");
@@ -125,21 +131,23 @@ function renderCards(data, containerElement) {
 }
 
 // ---------------------------------------------
-// 4. Fetch All Items & My Listings
+// 4. Fetch All Items (Base function for API calls)
 // ---------------------------------------------
-async function fetchAllItems() {
+async function fetchAllItems(queryString = "") {
   try {
     const userId = localStorage.getItem("userId");
     console.log("🔍 Fetching all items. Current userId:", userId);
-    
-    const url = userId 
-      ? `http://localhost:5000/api/items/all?userId=${userId}`
-      : "http://localhost:5000/api/items/all";
-    
+
+    let url = `http://localhost:5000/api/items?userId=${userId}`;
+
+    if (queryString) {
+      url += `&${queryString}`;
+    }
+
     const res = await fetch(url);
     const data = await res.json();
     console.log("📦 Received items:", data.data);
-    
+
     if (res.ok) {
       renderCards(data.data || [], container);
       countDisplay.textContent = `${data.data.length} items available`;
@@ -151,81 +159,52 @@ async function fetchAllItems() {
   }
 }
 
-// This function is no longer needed on the main dashboard
-// My listings are now on a separate page (mylisting.html)
-
 // ---------------------------------------------
-// 5. Filter & Search Logic
+// 5. Filter & Search Logic (Consolidated and Simplified)
 // ---------------------------------------------
 async function handleFilterAndSearch() {
   try {
-    const userId = localStorage.getItem("userId");
-    const url = userId 
-      ? `http://localhost:5000/api/items/all?userId=${userId}`
-      : "http://localhost:5000/api/items/all";
-    
-    const res = await fetch(url);
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Server Error");
+    const filters = {};
 
-    let items = result.data || []; // Get filter values
+    // a. Text Search & Locality
+    const searchKeyword = document.getElementById("search").value;
+    if (searchKeyword) filters.search = searchKeyword;
 
-    const searchKeyword = document.getElementById("search").value.toLowerCase();
+    const searchLocality = document.getElementById("pincode").value;
+    if (searchLocality) filters.locality = searchLocality;
+
+    // b. Select Boxes (Category and Community)
     const selectedCategory = document.getElementById("category").value;
-    const selectedType = document.getElementById("type").value;
-    const selectedCondition = document.getElementById("condition").value;
-    const searchLocality = document
-      .getElementById("pincode")
-      .value.toLowerCase();
+    if (selectedCategory && selectedCategory !== "All Categories")
+      filters.category = selectedCategory;
 
-    const isFreebieCB = document.getElementById("freebie").checked;
-    const isBarterCB = document.getElementById("barter").checked;
-    const isNewCB = document.getElementById("new").checked;
-    const isUsedCB = document.getElementById("used").checked;
+    const selectedCommunity = document.getElementById("community").value;
+    if (selectedCommunity && selectedCommunity !== "All Communities")
+      filters.community = selectedCommunity;
 
-    const filtered = items.filter((item) => {
-      const matchesKeyword =
-        item.title.toLowerCase().includes(searchKeyword) ||
-        item.description.toLowerCase().includes(searchKeyword);
-      const matchesLocality = (item.location || "")
-        .toLowerCase()
-        .includes(searchLocality);
-      const matchesCategory =
-        selectedCategory === "All Categories" ||
-        item.category === selectedCategory;
+    // c. Checkboxes (Exchange Type) - Now the only source for 'type' filter
+    const typeFilters = [];
+    if (document.getElementById("freebie").checked) typeFilters.push("Freebie");
+    if (document.getElementById("barter").checked) typeFilters.push("Barter");
 
-      let matchesType;
-      if (isFreebieCB || isBarterCB) {
-        matchesType =
-          (isFreebieCB && item.listingType === "Freebie") ||
-          (isBarterCB && item.listingType === "Barter");
-      } else {
-        matchesType =
-          selectedType === "All Types" || item.listingType === selectedType;
-      }
+    if (typeFilters.length > 0) {
+      filters.type = typeFilters.join(",");
+    }
 
-      let matchesCondition;
-      if (isNewCB || isUsedCB) {
-        matchesCondition =
-          (isNewCB && item.itemCondition === "New") ||
-          (isUsedCB && item.itemCondition === "Used");
-      } else {
-        matchesCondition =
-          selectedCondition === "Any Condition" ||
-          item.itemCondition === selectedCondition;
-      }
+    // d. Checkboxes (Condition) - Now the only source for 'condition' filter
+    const conditionFilters = [];
+    if (document.getElementById("new").checked) conditionFilters.push("New");
+    if (document.getElementById("used").checked) conditionFilters.push("Used");
 
-      return (
-        matchesKeyword &&
-        matchesLocality &&
-        matchesCategory &&
-        matchesType &&
-        matchesCondition
-      );
-    });
+    if (conditionFilters.length > 0) {
+      filters.condition = conditionFilters.join(",");
+    }
 
-    renderCards(filtered, container);
-    countDisplay.textContent = `${filtered.length} items available`;
+    // --- 2. Construct Query String ---
+    const queryString = new URLSearchParams(filters).toString();
+
+    // --- 3. Fetch Filtered Items from Backend ---
+    await fetchAllItems(queryString);
   } catch (err) {
     console.error("Filtering error:", err);
   }
@@ -240,7 +219,10 @@ document
 document
   .getElementById("applyFilters")
   .addEventListener("click", handleFilterAndSearch);
+
+// Simplified Clear Filters logic
 document.getElementById("clearFilters").addEventListener("click", () => {
+  // Reset all filter inputs on the page
   document.getElementById("freebie").checked = false;
   document.getElementById("barter").checked = false;
   document.getElementById("new").checked = false;
@@ -248,11 +230,32 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   document.getElementById("search").value = "";
   document.getElementById("pincode").value = "";
   document.getElementById("category").value = "All Categories";
-  document.getElementById("type").value = "All Types";
-  document.getElementById("condition").value = "Any Condition";
-  renderCards([], container);
+  // NOTE: Removed references to the deleted 'type' and 'condition' select boxes
+  document.getElementById("community").value = "All Communities";
+
+  // Rerun fetchAllItems with no query string
   fetchAllItems();
 });
+
+// Attach change listeners to select boxes and checkboxes to also trigger the filter immediately
+document
+  .getElementById("category")
+  .addEventListener("change", handleFilterAndSearch);
+document
+  .getElementById("community")
+  .addEventListener("change", handleFilterAndSearch);
+document
+  .getElementById("freebie")
+  .addEventListener("change", handleFilterAndSearch);
+document
+  .getElementById("barter")
+  .addEventListener("change", handleFilterAndSearch);
+document
+  .getElementById("new")
+  .addEventListener("change", handleFilterAndSearch);
+document
+  .getElementById("used")
+  .addEventListener("change", handleFilterAndSearch);
 
 // Redirect to listing page when Give/Barter button is clicked
 document.querySelector(".give-btn").addEventListener("click", () => {
@@ -262,58 +265,68 @@ document.querySelector(".give-btn").addEventListener("click", () => {
 // ---------------------------------------------
 // 7. Exchange Request Handlers
 // ---------------------------------------------
-async function createExchangeRequest(itemId, itemName, itemOwnerId, requestType) {
+async function createExchangeRequest(
+  itemId,
+  itemName,
+  itemOwnerId,
+  requestType
+) {
   const userId = localStorage.getItem("userId");
-  
+
   if (!userId) {
     alert("Please login to make a request");
     window.location.href = "index.html";
     return;
   }
-  
+
   // Check if trying to request own item
   if (userId === itemOwnerId) {
     alert("You cannot request your own item!");
     return;
   }
-  
+
   // Get message from user
   const message = prompt(
-    requestType === 'Claim' 
-      ? "Enter your message to claim this item:" 
+    requestType === "Claim"
+      ? "Enter your message to claim this item:"
       : "Enter your message to contact the seller:",
     "Hi, I'm interested in this item."
   );
-  
+
   if (!message || message.trim() === "") {
     alert("Message is required!");
     return;
   }
-  
+
   // For barter items, ask if they want to offer something
   let offeredItemName = null;
-  const shouldAskOffer = confirm("Would you like to offer something in exchange? (Click Cancel if not)");
+  const shouldAskOffer = confirm(
+    "Would you like to offer something in exchange? (Click Cancel if not)"
+  );
   if (shouldAskOffer) {
     offeredItemName = prompt("What would you like to offer in exchange?");
   }
-  
+
   try {
-    const response = await fetch("http://localhost:5000/api/exchange-requests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        requesterId: userId,
-        itemId: itemId,
-        itemName: itemName,
-        itemOwnerId: itemOwnerId,
-        requestType: requestType,
-        message: message.trim(),
-        offeredItemName: offeredItemName ? offeredItemName.trim() : null
-      })
-    });
-    
+    const response = await fetch(
+      "http://localhost:5000/api/exchange-requests",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requesterId: userId,
+          itemId: itemId,
+          itemName: itemName,
+          itemOwnerId: itemOwnerId,
+          requestType: requestType,
+          message: message.trim(),
+          offeredItemName: offeredItemName ? offeredItemName.trim() : null,
+        }),
+      }
+    );
+
     const result = await response.json();
-    
+
     if (response.ok) {
       alert("✅ " + result.message);
       itemModal.style.display = "none"; // Close modal
@@ -327,19 +340,23 @@ async function createExchangeRequest(itemId, itemName, itemOwnerId, requestType)
 }
 
 // Attach event listeners to modal buttons
-document.getElementById("requestItemBtn").addEventListener("click", function() {
-  const itemId = this.getAttribute("data-item-id");
-  const itemName = this.getAttribute("data-item-name");
-  const itemOwnerId = this.getAttribute("data-item-owner-id");
-  createExchangeRequest(itemId, itemName, itemOwnerId, "Claim");
-});
+document
+  .getElementById("requestItemBtn")
+  .addEventListener("click", function () {
+    const itemId = this.getAttribute("data-item-id");
+    const itemName = this.getAttribute("data-item-name");
+    const itemOwnerId = this.getAttribute("data-item-owner-id");
+    createExchangeRequest(itemId, itemName, itemOwnerId, "Claim");
+  });
 
-document.getElementById("contactSellerBtn").addEventListener("click", function() {
-  const itemId = this.getAttribute("data-item-id");
-  const itemName = this.getAttribute("data-item-name");
-  const itemOwnerId = this.getAttribute("data-item-owner-id");
-  createExchangeRequest(itemId, itemName, itemOwnerId, "Contact");
-});
+document
+  .getElementById("contactSellerBtn")
+  .addEventListener("click", function () {
+    const itemId = this.getAttribute("data-item-id");
+    const itemName = this.getAttribute("data-item-name");
+    const itemOwnerId = this.getAttribute("data-item-owner-id");
+    createExchangeRequest(itemId, itemName, itemOwnerId, "Contact");
+  });
 
 // Initial Load
 fetchAllItems();

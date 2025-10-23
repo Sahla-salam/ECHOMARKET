@@ -27,9 +27,9 @@ const upload = multer({ storage: storage });
 // Apply Multer middleware to the POST route
 router.post("/", upload.array("images", 5), createItem);
 
+router.get("/", getAllItems);
 // 🟢 FIX 1: The specific routes MUST come first!
 router.get("/my-listings", getMyListings);
-router.get("/all", getAllItems);
 
 // 🟢 FIX 2: The parameterized route comes last.
 router.get("/:id", getItemDetails);

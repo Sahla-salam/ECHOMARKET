@@ -1,9 +1,10 @@
 const Item = require("../models/Item");
 
-exports.createItem = async (req, res) => {
+// Change to const/function declaration instead of exports.functionName
+const createItem = async (req, res) => {
   try {
     const userId = req.body.userId;
-    
+
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -36,14 +37,14 @@ exports.createItem = async (req, res) => {
     console.error("Error creating item:", error);
 
     let errorMessage = "Internal Server Error. Could not process item.";
-    let statusCode = 500; // Handle Mongoose Validation Errors (e.g., required field missing)
+    let statusCode = 500;
 
     if (error.name === "ValidationError") {
-      statusCode = 400; // Bad Request // Extract all validation messages
+      statusCode = 400;
       errorMessage = Object.values(error.errors)
         .map((val) => val.message)
         .join(", ");
-    } // Ensure a response is sent to the client
+    }
 
     if (!res.headersSent) {
       res.status(statusCode).json({
@@ -54,10 +55,10 @@ exports.createItem = async (req, res) => {
   }
 };
 
-exports.getMyListings = async (req, res) => {
+const getMyListings = async (req, res) => {
   try {
     const userId = req.query.userId;
-    
+
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -82,26 +83,54 @@ exports.getMyListings = async (req, res) => {
   }
 };
 
-// Get all items EXCEPT the current user's items
-exports.getAllItems = async (req, res) => {
+const getAllItems = async (req, res) => {
+  // ... (Your filtering logic remains the same here)
   try {
-    const userId = req.query.userId;
-    
-    // Build query to exclude current user's items
-    // Convert userId to string for comparison since MongoDB stores ObjectId
-    const query = userId ? { owner: { $ne: userId } } : {};
-    
-    const items = await Item.find(query).lean();
-    
-    // Filter out current user's items in JavaScript as well (extra safety)
-    const filteredItems = userId 
-      ? items.filter(item => item.owner.toString() !== userId.toString())
-      : items;
+    const { userId, search, category, type, condition, locality, community } =
+      req.query;
+
+    const filter = {};
+    if (userId) {
+      filter.owner = { $ne: userId };
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (type) {
+      const typesArray = Array.isArray(type) ? type : type.split(",");
+      filter.listingType = { $in: typesArray };
+    }
+
+    if (condition) {
+      const conditionsArray = Array.isArray(condition)
+        ? condition
+        : condition.split(",");
+      filter.itemCondition = { $in: conditionsArray };
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (locality) {
+      filter.location = { $regex: locality, $options: "i" };
+    }
+
+    if (community) {
+      filter.community = community;
+    }
+
+    const items = await Item.find(filter).lean();
 
     res.status(200).json({
       success: true,
-      count: filteredItems.length,
-      data: filteredItems,
+      count: items.length,
+      data: items,
     });
   } catch (error) {
     console.error("Error fetching all items:", error);
@@ -113,8 +142,7 @@ exports.getAllItems = async (req, res) => {
   }
 };
 
-// 🟢 NEW EXPORT: Function to get details of a single item
-exports.getItemDetails = async (req, res) => {
+const getItemDetails = async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
 
@@ -135,7 +163,6 @@ exports.getItemDetails = async (req, res) => {
     let errorMessage = "Server Error fetching item details.";
     let statusCode = 500;
 
-    // Handle case where ID format is invalid (e.g., too short, non-hex)
     if (error.name === "CastError") {
       statusCode = 404;
       errorMessage = "Item not found (Invalid ID format).";
@@ -147,4 +174,12 @@ exports.getItemDetails = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+// All functions are now defined and exported in one block
+module.exports = {
+  createItem,
+  getMyListings,
+  getAllItems,
+  getItemDetails,
 };
