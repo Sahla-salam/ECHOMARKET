@@ -1,3 +1,32 @@
+// User Authentication & Display
+document.addEventListener('DOMContentLoaded', function() {
+  const username = localStorage.getItem('username');
+  const userId = localStorage.getItem('userId');
+  
+  if (!username || !userId) {
+    alert('⚠️ Please login first!');
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  const userGreeting = document.getElementById('user-greeting');
+  if (userGreeting) {
+    userGreeting.textContent = `Hi, ${username}!`;
+  }
+});
+
+// Sign out function
+function signOut() {
+  const confirmed = confirm('Are you sure you want to sign out?');
+  if (confirmed) {
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    alert('✅ Successfully signed out!');
+    window.location.href = 'index.html';
+  }
+}
+window.signOut = signOut;
+
 const incomingContainer = document.getElementById("incoming-container");
 const outgoingContainer = document.getElementById("outgoing-container");
 let allRequests = []; // Store all requests globally

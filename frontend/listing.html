@@ -45,11 +45,15 @@
 </head>
 <body>
     <div class="top-nav">
-        <h2>📝 Post a New Listing</h2>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <h2>📝 Post a New Listing</h2>
+            <span id="user-greeting" class="user-greeting">Hi, User!</span>
+        </div>
         <div class="nav-links">
             <button class="nav-btn" onclick="window.location.href='search.html'">Dashboard</button>
             <button class="nav-btn" onclick="window.location.href='mylisting.html'">My Listings</button>
             <button class="nav-btn secondary" onclick="window.location.href='search.html'">Cancel</button>
+            <button class="nav-btn" style="background: #dc3545;" onclick="signOut()">🚪 Sign Out</button>
         </div>
     </div>
     

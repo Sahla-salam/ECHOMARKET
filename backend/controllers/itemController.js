@@ -14,9 +14,16 @@ const createItem = async (req, res) => {
 
     let imageUrls = [];
     if (req.files && req.files.length > 0) {
+      // Get the server URL from the request
+      const protocol = req.protocol; // http or https
+      const host = req.get('host'); // localhost:5000 or IP:5000
+      const baseUrl = `${protocol}://${host}`;
+      
       imageUrls = req.files.map(
-        (file) => "/public/uploads/items/" + file.filename
+        (file) => `${baseUrl}/public/uploads/items/${file.filename}`
       );
+      
+      console.log(`📸 Uploaded ${imageUrls.length} images with URLs:`, imageUrls);
     }
 
     const newItemData = {
@@ -90,6 +97,11 @@ const getAllItems = async (req, res) => {
       req.query;
 
     const filter = {};
+    // Only hide claimed items, show available and items without status (old items)
+    filter.status = { $ne: 'claimed' };
+    
+    console.log("🔍 Filter for getAllItems:", JSON.stringify(filter));
+    
     if (userId) {
       filter.owner = { $ne: userId };
     }
@@ -126,6 +138,11 @@ const getAllItems = async (req, res) => {
     }
 
     const items = await Item.find(filter).lean();
+    
+    console.log(`📦 Found ${items.length} items after filter`);
+    console.log(`   Items with claimed status: ${items.filter(i => i.status === 'claimed').length}`);
+    console.log(`   Items without status field: ${items.filter(i => !i.status).length}`);
+    console.log(`   Items with available status: ${items.filter(i => i.status === 'available').length}`);
 
     res.status(200).json({
       success: true,

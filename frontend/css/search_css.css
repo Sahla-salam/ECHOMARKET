@@ -18,7 +18,42 @@ body {
     padding: 12px 30px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.logo { font-weight: 700; letter-spacing: 0.5px; }
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo { 
+    font-weight: 700; 
+    letter-spacing: 0.5px; 
+    margin: 0;
+}
+
+.user-greeting {
+    color: #2563eb;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 6px 12px;
+    background: #e0f2fe;
+    border-radius: 20px;
+}
+
+.signout-btn {
+    background: #dc3545;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.signout-btn:hover {
+    background: #c82333;
+}
 
 .back-btn {
     background: #6c757d;
@@ -33,6 +68,131 @@ body {
 
 .navbar button.active {
     box-shadow: 0 0 0 2px #fff;
+}
+
+/* Notification Styles */
+.notification-container {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-btn {
+    background: transparent;
+    border: none;
+    color: #04183a;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+    padding: 8px 12px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+    display: none;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    width: 350px;
+    max-height: 450px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+.notification-header h3 {
+    margin: 0;
+    color: #04183a;
+    font-size: 16px;
+}
+
+.mark-all-btn {
+    background: transparent;
+    border: none;
+    color: #2563eb;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.mark-all-btn:hover {
+    text-decoration: underline;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background: #f8f9fa;
+}
+
+.notification-item.unread {
+    background: #e3f2fd;
+}
+
+.notification-item.unread:hover {
+    background: #d1e7fd;
+}
+
+.notification-content strong {
+    display: block;
+    color: #04183a;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.notification-content p {
+    margin: 0 0 5px 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.notification-content small {
+    color: #999;
+    font-size: 11px;
+}
+
+.unread-dot {
+    position: absolute;
+    top: 18px;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    background: #2563eb;
+    border-radius: 50%;
 }
 .give-btn {
     background: #28a745;
@@ -201,6 +361,25 @@ body {
 .tag.freebie { background-color: #22c55e; }
 .tag.barter { background-color: #2563eb; }
 .tag.request { background-color: #ffc107; color: #333; }
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    margin-left: 8px;
+}
+
+.status-badge.claimed {
+    background-color: #28a745;
+}
+
+.status-badge.expired {
+    background-color: #dc3545;
+}
 
 
 /* ========================================

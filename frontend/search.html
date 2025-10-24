@@ -8,11 +8,35 @@
 </head>
 <body>
     <header class="navbar">
-        <h2 class="logo">ECHOMARKET</h2>
+        <div class="logo-section">
+            <h2 class="logo">ECHOMARKET</h2>
+            <span id="user-greeting" class="user-greeting">Hi, User!</span>
+        </div>
         <div class="location">📍 Kollam, Kerala</div>
         <button class="give-btn">+ Give/Barter</button>
         <button class="mylisting-btn">My Listings</button>
         <button class="exchange-btn">Exchange/Request</button>
+        
+        <!-- Notification Bell -->
+        <div class="notification-container">
+            <button id="notification-bell" class="notification-btn" onclick="toggleNotificationDropdown()">
+                🔔
+                <span id="notification-badge" class="notification-badge">0</span>
+            </button>
+            
+            <div id="notification-dropdown" class="notification-dropdown">
+                <div class="notification-header">
+                    <h3>Notifications</h3>
+                    <button onclick="markAllAsRead()" class="mark-all-btn">Mark all as read</button>
+                </div>
+                <div id="notification-list" class="notification-list">
+                    <!-- Notifications will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sign Out Button -->
+        <button class="signout-btn" onclick="signOut()">🚪 Sign Out</button>
     </header>
 
     <section class="search-bar">
@@ -116,6 +140,7 @@
         </div>
     </div>
     <script src="js/search_script.js"></script>
+    <script src="js/notifications.js"></script>
 </body>
 </html>
 

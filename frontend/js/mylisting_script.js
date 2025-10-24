@@ -1,10 +1,52 @@
 // My Listings Page Script
 
+// Display username and check if user is logged in
+document.addEventListener('DOMContentLoaded', function() {
+  const username = localStorage.getItem('username');
+  const userId = localStorage.getItem('userId');
+  
+  if (!username || !userId) {
+    alert('⚠️ Please login first!');
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  const userGreeting = document.getElementById('user-greeting');
+  if (userGreeting) {
+    userGreeting.textContent = `Hi, ${username}!`;
+  }
+});
+
+// Sign out function
+function signOut() {
+  const confirmed = confirm('Are you sure you want to sign out?');
+  if (confirmed) {
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    alert('✅ Successfully signed out!');
+    window.location.href = 'index.html';
+  }
+}
+window.signOut = signOut;
+
 const myListingsContainer = document.getElementById("myListings");
 const countDisplay = document.getElementById("count");
 
 const itemModal = document.getElementById("itemModal");
 const closeBtn = document.querySelector(".modal-content .close-button");
+
+// Helper function to get full image URL
+function getFullImageUrl(imagePath) {
+  if (!imagePath) return '';
+  
+  // If already a full URL (http:// or https://), return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // Otherwise, construct full URL with current server
+  return `http://localhost:5000${imagePath}`;
+}
 
 // Close modal when X is clicked
 if (closeBtn) {
@@ -56,7 +98,7 @@ async function showItemModal(itemId) {
     const gallery = document.getElementById("modal-image-gallery");
     gallery.innerHTML =
       item.images && item.images.length
-        ? `<img src="${item.images[0]}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
+        ? `<img src="${getFullImageUrl(item.images[0])}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
         : `<p>No image available.</p>`;
 
     // Attach item ID to action buttons
@@ -93,12 +135,21 @@ function renderCards(data, containerElement) {
     card.setAttribute("data-item-id", item._id);
 
     const imageHtml = item.images?.length
-      ? `<div class="card-image-wrapper"><img src="${item.images[0]}" alt="${item.title}" class="card-img"/></div>`
+      ? `<div class="card-image-wrapper"><img src="${getFullImageUrl(item.images[0])}" alt="${item.title}" class="card-img"/></div>`
       : "";
+    
+    const statusBadge = item.status === 'claimed' 
+      ? '<span class="status-badge claimed">✓ CLAIMED</span>' 
+      : item.status === 'expired' 
+      ? '<span class="status-badge expired">⏰ EXPIRED</span>' 
+      : '';
 
     card.innerHTML = `
             ${imageHtml}
-            <span class="tag ${item.listingType?.toLowerCase() || ""}">${item.listingType}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="tag ${item.listingType?.toLowerCase() || ""}">${item.listingType}</span>
+                ${statusBadge}
+            </div>
             <h3>${item.title}</h3>
             <p><b>Category:</b> ${item.category || "N/A"}</p>
             <p><b>Condition:</b> ${item.itemCondition || "N/A"}</p>

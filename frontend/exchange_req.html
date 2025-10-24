@@ -105,12 +105,16 @@
 </head>
 <body>
   <header class="navbar">
-    <h2 class="logo">ECHOMARKET</h2>
+    <div class="logo-section">
+      <h2 class="logo">ECHOMARKET</h2>
+      <span id="user-greeting" class="user-greeting">Hi, User!</span>
+    </div>
     <div class="location">📍 Kollam, Kerala</div>
     <button class="give-btn" onclick="window.location.href='listing.html'">+ Give/Barter</button>
     <button class="mylisting-btn" onclick="window.location.href='mylisting.html'">My Listings</button>
     <button class="exchange-btn active" onclick="window.location.href='exchange_req.html'">Exchange/Request</button>
     <button class="back-btn" onclick="window.location.href='search.html'">← Back to Dashboard</button>
+    <button class="signout-btn" onclick="signOut()">🚪 Sign Out</button>
   </header>
 
   <div class="main-container">

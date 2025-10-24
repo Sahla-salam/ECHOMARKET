@@ -1,8 +1,63 @@
 // ---------------------------------------------
+// 0. User Authentication & Display
+// ---------------------------------------------
+// Display username and check if user is logged in
+document.addEventListener('DOMContentLoaded', function() {
+  const username = localStorage.getItem('username');
+  const userId = localStorage.getItem('userId');
+  
+  // Check if user is logged in
+  if (!username || !userId) {
+    alert('⚠️ Please login first!');
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  // Display username in greeting
+  const userGreeting = document.getElementById('user-greeting');
+  if (userGreeting) {
+    userGreeting.textContent = `Hi, ${username}!`;
+  }
+});
+
+// Sign out function
+function signOut() {
+  const confirmed = confirm('Are you sure you want to sign out?');
+  if (confirmed) {
+    // Clear all stored data
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    
+    // Show success message
+    alert('✅ Successfully signed out!');
+    
+    // Redirect to login page
+    window.location.href = 'index.html';
+  }
+}
+
+// Make signOut available globally
+window.signOut = signOut;
+
+// ---------------------------------------------
 // 1. Elements & Modal Setup
 // ---------------------------------------------
 const container = document.getElementById("cards");
 const countDisplay = document.getElementById("count");
+
+// Helper function to get full image URL
+function getFullImageUrl(imagePath) {
+  if (!imagePath) return '';
+  
+  // If already a full URL (http:// or https://), return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // Otherwise, construct full URL with current server
+  // This handles old relative paths from database
+  return `http://localhost:5000${imagePath}`;
+}
 
 const itemModal = document.getElementById("itemModal");
 const closeBtn = document.querySelector(".modal-content .close-button");
@@ -61,7 +116,7 @@ async function showItemModal(itemId) {
     const gallery = document.getElementById("modal-image-gallery");
     gallery.innerHTML =
       item.images && item.images.length
-        ? `<img src="${item.images[0]}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
+        ? `<img src="${getFullImageUrl(item.images[0])}" alt="${item.title}" style="max-width:100%; height:auto; border-radius: 8px;">`
         : `<p>No image available.</p>`;
 
     // 3. Attach item ID to buttons for future action
@@ -104,7 +159,7 @@ function renderCards(data, containerElement) {
     card.setAttribute("data-item-id", item._id);
 
     const imageHtml = item.images?.length
-      ? `<div class="card-image-wrapper"><img src="${item.images[0]}" alt="${item.title}" class="card-img"/></div>`
+      ? `<div class="card-image-wrapper"><img src="${getFullImageUrl(item.images[0])}" alt="${item.title}" class="card-img"/></div>`
       : "";
 
     card.innerHTML = `

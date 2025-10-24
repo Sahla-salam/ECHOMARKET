@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const ExchangeRequest = require("../models/exchangerequests");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
+const Item = require("../models/Item");
 
 // POST - Create a new exchange request
 router.post("/", async (req, res) => {
@@ -126,6 +128,9 @@ router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+    
+    console.log(`\n🔄 PUT /api/exchange-requests/${id} called`);
+    console.log(`   Status to update: "${status}"`);
 
     const updatedRequest = await ExchangeRequest.findByIdAndUpdate(
       id,
@@ -135,6 +140,62 @@ router.put("/:id", async (req, res) => {
 
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
+    }
+    
+    console.log(`✅ Request updated successfully. New status: "${updatedRequest.status}"`);
+
+    // Create notification for the requester
+    if (status === 'Accepted' || status === 'Declined') {
+      console.log(`📋 Status is "${status}" - will create notification and update item`);
+      const notificationType = status === 'Accepted' ? 'request_accepted' : 'request_declined';
+      const title = status === 'Accepted' 
+        ? '✅ Request Accepted!' 
+        : '❌ Request Declined';
+      const message = status === 'Accepted'
+        ? `Your request for "${updatedRequest.itemName}" has been accepted! The owner will contact you soon.`
+        : `Your request for "${updatedRequest.itemName}" has been declined.`;
+      
+      await Notification.create({
+        userId: updatedRequest.requesterId,
+        type: notificationType,
+        title: title,
+        message: message,
+        exchangeRequestId: updatedRequest._id,
+        itemName: updatedRequest.itemName,
+        isRead: false
+      });
+      
+      console.log(`📬 Notification created for user ${updatedRequest.requesterId}: ${title}`);
+      
+      // If accepted, mark the item as claimed
+      if (status === 'Accepted') {
+        console.log(`🎯 Attempting to mark item as claimed...`);
+        console.log(`   Item ID: ${updatedRequest.itemId}`);
+        console.log(`   Requester ID: ${updatedRequest.requesterId}`);
+        
+        try {
+          const updatedItem = await Item.findByIdAndUpdate(
+            updatedRequest.itemId,
+            {
+              status: 'claimed',
+              claimedBy: updatedRequest.requesterId,
+              claimedAt: new Date()
+            },
+            { new: true }
+          );
+          
+          if (!updatedItem) {
+            console.error(`❌ ITEM NOT FOUND with ID: ${updatedRequest.itemId}`);
+          } else {
+            console.log(`✅ Item successfully marked as claimed!`);
+            console.log(`   Item Title: ${updatedItem.title}`);
+            console.log(`   Item Status: ${updatedItem.status}`);
+            console.log(`   Claimed By: ${updatedItem.claimedBy}`);
+          }
+        } catch (itemUpdateError) {
+          console.error(`❌ ERROR updating item:`, itemUpdateError.message);
+        }
+      }
     }
 
     res.json({ message: "Status updated successfully", updatedRequest });

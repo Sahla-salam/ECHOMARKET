@@ -40,6 +40,15 @@ const ItemSchema = new mongoose.Schema({
     // Metadata
     expiryDate: { type: Date, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    
+    // Status
+    status: {
+        type: String,
+        enum: ['available', 'claimed', 'expired'],
+        default: 'available'
+    },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    claimedAt: { type: Date }
 }, { timestamps: true });
 
 const Item = mongoose.models.Item || mongoose.model('Item', ItemSchema);

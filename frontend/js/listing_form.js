@@ -1,6 +1,37 @@
 // frontend/listing-form.js (STREAMLINED AND CORRECTED)
 
 // ---------------------------------------------
+// User Authentication & Display
+// ---------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+  const username = localStorage.getItem('username');
+  const userId = localStorage.getItem('userId');
+  
+  if (!username || !userId) {
+    alert('⚠️ Please login first!');
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  const userGreeting = document.getElementById('user-greeting');
+  if (userGreeting) {
+    userGreeting.textContent = `Hi, ${username}!`;
+  }
+});
+
+// Sign out function
+function signOut() {
+  const confirmed = confirm('Are you sure you want to sign out?');
+  if (confirmed) {
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    alert('✅ Successfully signed out!');
+    window.location.href = 'index.html';
+  }
+}
+window.signOut = signOut;
+
+// ---------------------------------------------
 // Elements (Updated to match streamlined HTML IDs/Names)
 // ---------------------------------------------
 const form = document.getElementById("listingform");
@@ -20,6 +51,61 @@ const barterPreferences = document.getElementById("barterPreferences"); // 🔥 
 
 // Assuming imagewrapper is used for image preview/styling
 const iwrapper = form.querySelector('.file-upload-container'); 
+const imagePreviewContainer = document.getElementById('image-preview');
+
+// ---------------------------------------------
+// Image Preview Functionality
+// ---------------------------------------------
+images.addEventListener('change', function(e) {
+    const files = e.target.files;
+    imagePreviewContainer.innerHTML = ''; // Clear previous previews
+    
+    if (files.length > 5) {
+        alert('⚠️ You can only upload a maximum of 5 images!');
+        images.value = ''; // Reset the input
+        return;
+    }
+    
+    // Create preview for each selected image
+    Array.from(files).forEach((file, index) => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const previewWrapper = document.createElement('div');
+                previewWrapper.className = 'image-preview-item';
+                previewWrapper.style.cssText = 'display: inline-block; position: relative; margin: 10px; width: 150px; height: 150px; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;';
+                
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.innerHTML = '×';
+                removeBtn.style.cssText = 'position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 18px; line-height: 1;';
+                removeBtn.onclick = function() {
+                    previewWrapper.remove();
+                    // Note: Can't actually remove from FileList, so we'll handle this in form submission
+                };
+                
+                previewWrapper.appendChild(img);
+                previewWrapper.appendChild(removeBtn);
+                imagePreviewContainer.appendChild(previewWrapper);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Show preview count
+    if (files.length > 0) {
+        const countDiv = document.createElement('div');
+        countDiv.style.cssText = 'margin-top: 10px; color: #2563eb; font-weight: 600;';
+        countDiv.textContent = `📸 ${files.length} image${files.length > 1 ? 's' : ''} selected`;
+        imagePreviewContainer.appendChild(countDiv);
+    }
+});
 
 // ---------------------------------------------
 // Conditional Field Logic (Mode/Barter/Images)

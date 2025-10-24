@@ -8,12 +8,16 @@
 </head>
 <body>
     <header class="navbar">
-        <h2 class="logo">ECHOMARKET</h2>
+        <div class="logo-section">
+            <h2 class="logo">ECHOMARKET</h2>
+            <span id="user-greeting" class="user-greeting">Hi, User!</span>
+        </div>
         <div class="location">📍 Kollam, Kerala</div>
         <button class="give-btn">+ Give/Barter</button>
         <button class="mylisting-btn active">My Listings</button>
         <button class="exchange-btn">Exchange/Request</button>
         <button class="back-btn">← Back to Dashboard</button>
+        <button class="signout-btn" onclick="signOut()">🚪 Sign Out</button>
     </header>
 
     <main class="main-content-full">

@@ -8,6 +8,7 @@ const path = require("path");
 
 const itemRoutes = require("./routes/itemRoutes");
 const exchangeRequestRoutes = require("./routes/exchangeRequestRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 const PORT = 5000;
@@ -39,6 +40,7 @@ app.use("/api/items", itemRoutes);
 
 // ✅ FIXED ROUTE (Correct URL)
 app.use("/api/exchange-requests", exchangeRequestRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // --- USER ROUTES ---
 app.post("/signup", async (req, res) => {
@@ -59,14 +61,22 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
+    console.log("🔐 Login attempt:", req.body);
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+    
     const user = await User.findOne({ email, password });
+    console.log("👤 User found:", user ? "Yes" : "No");
+    
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     res.json({ message: "Login successful", name: user.name, userId: user._id });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Login error:", err);
+    res.status(500).json({ message: "Server error: " + err.message });
   }
 });
 
