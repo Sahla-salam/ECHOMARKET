@@ -22,39 +22,39 @@
 
     <section class="filter-controls">
         <select id="category">
-            <option>All Categories</option>
-            <option>Furniture</option>
-            <option>Books</option>
-            <option>Electronics</option>
-            <option>Clothing</option>
-            <option>Toys</option>
-            <option>Others</option>
+            <option value="All Categories">All Categories</option> 
+            <option value="Furniture">Furniture</option>
+            <option value="Books">Books</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Toys">Toys</option>
+            <option value="Others">Others</option>
         </select>
-                <input type="text" id="pincode" placeholder="Pincode/Locality">
+        <input type="text" id="pincode" placeholder="Pincode/Locality">
         <select id="community">
-            <option>All Communities</option>
-            <option>Eco Warriors</option>
-            <option>College Students</option>
-            <option>Manhattan Residents</option>
+            <option value="All Communities">All Communities</option> 
+            <option value="Eco Warriors">Eco Warriors</option>
+            <option value="College Students">College Students</option>
+            <option value="Manhattan Residents">Manhattan Residents</option>
         </select>
+        <button id="applyFilters">Apply Filters</button>
+        <button id="clearFilters" class="clear">Clear All</button>
     </section>
 
     <main class="main-content">
         <aside class="filters">
-            <h3>Filters</h3>
-            <p><strong>Exchange Type</strong></p>
-            <label><input type="checkbox" id="freebie"> Free Giveaway</label><br>
-            <label><input type="checkbox" id="barter"> Barter/Trade</label>
-            <button onclick="window.location.href='listing.html'">Add Product</button>
-
-
-            <p><strong>Condition</strong></p>
-            <label><input type="checkbox" id="new"> New</label><br>
-            <label><input type="checkbox" id="used"> Used</label>
-
-            <button id="applyFilters">Apply Filters</button>
-            <button id="clearFilters" class="clear">Clear All</button>
-        </aside>
+            <div class="filter-group">
+                <h4>Listing Type</h4>
+                <label><input type="checkbox" id="freebie" value="Freebie"> Freebie</label><br>
+                <label><input type="checkbox" id="barter" value="Barter"> Barter</label>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Condition</h4>
+                <label><input type="checkbox" id="new" value="New"> New</label><br>
+                <label><input type="checkbox" id="used" value="Used"> Used</label>
+            </div>
+            </aside>
 
         <section class="results">
             <div class="results-header">
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div id="cards" class="card-container">
+            <div id="results" class="card-container"> 
                 </div>
         </section>
     </main>
@@ -76,37 +76,27 @@
     <div id="itemModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            
             <div class="modal-grid">
-                
                 <div class="modal-gallery">
-                    <div id="modal-image-gallery">
-                        </div>
+                    <div id="modal-image-gallery"></div>
                 </div>
-                
                 <div class="modal-info">
                     <h2 id="modal-title">Item Title Loading...</h2>
-                    
                     <div class="modal-tags">
                         <span class="tag-listing-type" id="modal-type">Type</span>
                         <span class="tag-condition" id="modal-condition">Condition</span>
                         <span class="tag-category" id="modal-category">Category</span>
                     </div>
-                    
                     <hr>
-
                     <p class="detail-line"><label>Description:</label></p>
                     <p id="modal-description" class="detail-description"></p>
-                    
                     <div id="modal-barter-section" class="detail-section" style="display:none;">
                         <p class="detail-line"><label>Looking For (Barter Preference):</label></p>
                         <p id="modal-barter-text" class="detail-barter-pref"></p>
                     </div>
-                    
                     <p class="detail-line"><label>Location:</label> <span id="modal-location"></span></p>
                     <p class="detail-line"><label>Community Tag:</label> <span id="modal-community"></span></p>
                     <p class="detail-line"><label>Expiry Date:</label> <span id="modal-expiry"></span></p>
-
                     <div class="modal-actions">
                         <button id="requestItemBtn" class="action-btn primary-btn">Request/Claim Item</button>
                         <button id="contactSellerBtn" class="action-btn secondary-btn">Contact Seller</button>
