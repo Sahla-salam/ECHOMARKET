@@ -42,7 +42,7 @@ window.signOut = signOut;
 // ---------------------------------------------
 // 1. Elements & Modal Setup
 // ---------------------------------------------
-const container = document.getElementById("cards");
+const container = document.getElementById("results");
 const countDisplay = document.getElementById("count");
 
 // Helper function to get full image URL
@@ -199,18 +199,25 @@ async function fetchAllItems(queryString = "") {
       url += `&${queryString}`;
     }
 
+    console.log("🌐 Fetching from URL:", url);
     const res = await fetch(url);
+    console.log("📡 Response status:", res.status, res.statusText);
+    
     const data = await res.json();
-    console.log("📦 Received items:", data.data);
+    console.log("📦 Received data:", data);
+    console.log("📦 Items array:", data.data);
+    console.log("📦 Number of items:", data.data ? data.data.length : 0);
 
     if (res.ok) {
       renderCards(data.data || [], container);
-      countDisplay.textContent = `${data.data.length} items available`;
+      countDisplay.textContent = `${data.data ? data.data.length : 0} items available`;
     } else {
       console.error("Failed to fetch items:", data.error);
+      alert("Error loading items: " + (data.error || "Unknown error"));
     }
   } catch (err) {
-    console.error("Network error:", err);
+    console.error("❌ Network error:", err);
+    alert("Network error: " + err.message);
   }
 }
 

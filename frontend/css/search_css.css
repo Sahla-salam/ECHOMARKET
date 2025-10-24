@@ -214,21 +214,6 @@ body {
     cursor: pointer;
     font-weight: 600;
 }
-
-.community-btn {
-    background: #10b981;
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
-}
-
-.community-btn:hover {
-    background: #059669;
-}
 .mylisting-btn:hover { background: #e68900; }
 
 .exchange-btn {
