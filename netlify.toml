@@ -1,0 +1,12 @@
+# Netlify Configuration for EchoMarket Frontend
+
+[build]
+  base = "frontend/"
+  publish = "frontend/"
+  command = "" # No build command needed for vanilla JS
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
