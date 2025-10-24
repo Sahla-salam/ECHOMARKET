@@ -1,4 +1,5 @@
 
+require('dotenv').config();
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -11,14 +12,13 @@ const exchangeRequestRoutes = require("./routes/exchangeRequestRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // --- 1. MONGODB CONNECTION ---
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://sahlasalamak:wHwRwv3Cf8S4gE4V@cluster0.5kena9z.mongodb.net/EchoMarket";
+
 mongoose
-  .connect(
-    "mongodb+srv://sahlasalamak:wHwRwv3Cf8S4gE4V@cluster0.5kena9z.mongodb.net/EchoMarket",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
