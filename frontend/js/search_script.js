@@ -79,7 +79,7 @@ window.onclick = function (event) {
 // ---------------------------------------------
 async function showItemModal(itemId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/items/${itemId}`);
+    const res = await fetch(`https://echomarket-8ipi.onrender.com/api/items/${itemId}`);
     const result = await res.json();
     if (!res.ok)
       throw new Error(result.error || "Could not fetch item details.");
@@ -193,7 +193,7 @@ async function fetchAllItems(queryString = "") {
     const userId = localStorage.getItem("userId");
     console.log("🔍 Fetching all items. Current userId:", userId);
 
-    let url = `http://localhost:5000/api/items?userId=${userId}`;
+    let url = `https://echomarket-8ipi.onrender.com/api/items?userId=${userId}`;
 
     if (queryString) {
       url += `&${queryString}`;
@@ -371,7 +371,7 @@ async function createExchangeRequest(
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/exchange-requests",
+      "https://echomarket-8ipi.onrender.com/api/exchange-requests",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -67,7 +67,7 @@ window.onclick = function (event) {
 // ---------------------------------------------
 async function showItemModal(itemId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/items/${itemId}`);
+    const res = await fetch(`https://echomarket-8ipi.onrender.com/api/items/${itemId}`);
     const result = await res.json();
     if (!res.ok)
       throw new Error(result.error || "Could not fetch item details.");
@@ -189,7 +189,7 @@ async function fetchMyListings() {
 
     console.log("📋 Fetching my listings for userId:", userId);
 
-    const res = await fetch(`http://localhost:5000/api/items/my-listings?userId=${userId}`);
+    const res = await fetch(`https://echomarket-8ipi.onrender.com/api/items/my-listings?userId=${userId}`);
     const data = await res.json();
     console.log("✅ My listings:", data.data);
 

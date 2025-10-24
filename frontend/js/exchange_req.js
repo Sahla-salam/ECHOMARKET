@@ -111,7 +111,7 @@ async function fetchRequests() {
       return;
     }
     
-    const response = await fetch(`http://localhost:5000/api/exchange-requests?userId=${userId}`);
+    const response = await fetch(`https://echomarket-8ipi.onrender.com/api/exchange-requests?userId=${userId}`);
     const data = await response.json();
 
     console.log("📊 All requests received:", data);
@@ -157,7 +157,7 @@ async function fetchRequests() {
 // ✅ Update the status both in DB and on screen
 async function updateStatus(id, newStatus) {
   try {
-    const response = await fetch(`http://localhost:5000/api/exchange-requests/${id}`, {
+    const response = await fetch(`https://echomarket-8ipi.onrender.com/api/exchange-requests/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus })

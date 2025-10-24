@@ -194,7 +194,7 @@ form.addEventListener("submit", async function (e) {
 
     try {
         // Send the POST request
-        const response = await fetch("http://localhost:5000/api/items", {
+        const response = await fetch("https://echomarket-8ipi.onrender.com/api/items", {
             method: "POST",
             // IMPORTANT: DO NOT set Content-Type header. The browser sets the 
             // correct 'multipart/form-data' boundary automatically for FormData.

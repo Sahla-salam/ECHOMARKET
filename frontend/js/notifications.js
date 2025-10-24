@@ -8,7 +8,7 @@ async function fetchNotifications() {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     
-    const response = await fetch(`http://localhost:5000/api/notifications?userId=${userId}`);
+    const response = await fetch(`https://echomarket-8ipi.onrender.com/api/notifications?userId=${userId}`);
     const data = await response.json();
     
     if (data.success) {
@@ -75,7 +75,7 @@ function renderNotifications() {
 // Mark notification as read
 async function markAsRead(notificationId) {
   try {
-    await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
+    await fetch(`https://echomarket-8ipi.onrender.com/api/notifications/${notificationId}/read`, {
       method: "PUT"
     });
     
@@ -96,7 +96,7 @@ async function markAsRead(notificationId) {
 async function markAllAsRead() {
   try {
     const userId = localStorage.getItem("userId");
-    await fetch(`http://localhost:5000/api/notifications/read-all?userId=${userId}`, {
+    await fetch(`https://echomarket-8ipi.onrender.com/api/notifications/read-all?userId=${userId}`, {
       method: "PUT"
     });
     
